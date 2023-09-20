@@ -41,6 +41,7 @@ class UserManager(BaseUserManager):
 
         return user
 
+
 # 재정의한 User
 class User(AbstractBaseUser, PermissionsMixin):
 
@@ -100,7 +101,7 @@ class Post(models.Model):
     apply_start_date = models.DateTimeField()     # 서류 시작 날짜
     apply_end_date = models.DateTimeField()       # 서류 마감 날짜
     document_result_date = models.DateTimeField() # 서류 발표 날짜
-    is_interview = models.BooleanField(default=True)  # 면접 여부, 기본값 True
+    has_interview = models.BooleanField(default=True)  # 면접 여부, 기본값 True
     interview_start_date = models.DateTimeField()   # 면접 시작 날짜
     interview_end_date = models.DateTimeField()     # 면접 종료 날짜
     final_result_date = models.DateTimeField()      # 최종 발표 날짜
@@ -109,28 +110,34 @@ class Post(models.Model):
     content = models.TextField()               # 공고 내용
     membership_fee = models.CharField(max_length=200)  # 회비 내용
     crew = models.ForeignKey(Crew, related_name="post", on_delete=models.CASCADE) # Crew의 FK
+    created_at = models.DateTimeField(auto_now_add=True) # 모집 공고 생성일
+    progress = models.CharField(max_length=300)
+    pass_message = models.CharField(max_length=500)
+    fail_message = models.CharField(max_length=500)
 
     # def total_apply_count(self):  # 해당 Post에 연결된 apply들이 몇 개인지 계산해서 반환해주는 메서드
     #     return self.apply.count() # related_name 'apply'를 사용함. 따라서 역참조 할 때 apply 이용!
+
     def __str__(self):
         return self.title
 
-# Post에 1:다 로 연결될 PostImage 모델
+
+# Post의 이미지
 class PostImage(models.Model):
     # post_image = models.ImageField()
     post = models.ForeignKey(Post, related_name='image', on_delete=models.CASCADE)
     
     def __str__(self):
-        return f"{self.post} 의 사진"
+        return f"{self.post} 의 사진 {self.id}"
 
 
-# 모집공고 지원하기
+# 모집공고 지원
 class Apply(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='apply', on_delete=models.CASCADE)
     post = models.ForeignKey(Post, related_name='apply', on_delete=models.CASCADE)
     apply_at = models.DateTimeField(auto_now=True)
     document_pass = models.BooleanField(default=False, null=True, blank=True) # 서류 통과 여부, 기본값 False
-    interview_time_date = models.DateTimeField(null=True, blank=True) # 면접 날짜 정한 것
+    interview_date = models.DateTimeField(null=True, blank=True) # 면접 날짜
     final_pass = models.BooleanField(default=False, null=True, blank=True)    # 최종합격 여부, 기본값 False
 
     def __str__(self):
@@ -150,16 +157,16 @@ class Like(models.Model):
 class Section(models.Model):
     section_name = models.CharField(max_length=50) # 공통 , 백엔드, 프론트앤드, 기획/디자인
     post = models.ForeignKey(Post, related_name='section', on_delete=models.CASCADE)
+    description = models.TextField()
 
     def __str__(self):
         return self.section_name
     
 
-
 # 장문형
 class LongSentence(models.Model):
     question = models.CharField(max_length=300)  # ex) 지원자께서 지원하신 동기는 무엇인가요?
-    answer_limit = models.IntegerField()  # 500자
+    letter_count_limit = models.IntegerField()  # 500자
     is_essential = models.BooleanField(default=True) # 해당 타입이 필수적인지 아닌지 여부
     section = models.ForeignKey(Section, related_name="long_sentence", on_delete=models.CASCADE)
 
@@ -174,22 +181,21 @@ class LongSentenceAnswer(models.Model):
     answer = models.TextField()
 
 
-
 # 체크박스
 class CheckBox(models.Model):
     question = models.CharField(max_length=300) 
     is_essential = models.BooleanField(default=True) # 해당 타입이 필수적인지 아닌지 여부
-    count_minumum = models.IntegerField(default=1)
-    count_maximum = models.IntegerField(default=1)
+    answer_minumum = models.IntegerField(default=1)
+    answer_maximum = models.IntegerField(default=1)
     section = models.ForeignKey(Section, related_name="check_box", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"check box : {self.question}"
 
 
-# 체크박스의 option
+# 체크박스의 선택지
 class CheckBoxOption(models.Model):
-    name = models.CharField(max_length=200)
+    option = models.CharField(max_length=200)
     check_box = models.ForeignKey(CheckBox, related_name="check_box_option", on_delete=models.CASCADE)
 
     def __str__(self):
@@ -213,10 +219,8 @@ class File(models.Model):
         return f"file : {self.question}"
     
 
-# 파일 응답
+# 파일에 대한 답
 class FileAnswer(models.Model):
     file = models.ForeignKey(File, related_name='file_answer', on_delete=models.CASCADE)
     apply = models.ForeignKey(Apply, related_name="file_answer", on_delete=models.CASCADE)
     # uploaded_file = models.FieldFile()
-
-
