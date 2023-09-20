@@ -1,16 +1,23 @@
 from django.db import models
-from django.contrib.auth.models import  AbstractUser
+from django.conf import settings
+from django.contrib.auth.models import AbstractUser
+
 
 # 재정의한 User
 class User(AbstractUser):
-    name = models.CharField(max_length=30, unique=True)             # 사용자의 이름 validators=[validate_unique_nickname]
-    sogang_mail = models.CharField(max_length=100, unique=True)     # 서강 이메일
-    student_number = models.CharField(max_length=20, unique=True)   # 학번 ex) 20201111
-    first_major = models.CharField(max_length=30)                   # 본전공
+    email = models.EmailField(unique=True)
+    name = models.CharField(max_length=30)             # 사용자의 이름 validators=[validate_unique_nickname]
+    sogang_mail = models.CharField(max_length=100, unique=True, null=True, blank=True)     # 서강 이메일
+    student_number = models.CharField(max_length=20, unique=True, null=True, blank=True)   # 학번 ex) 20201111
+    first_major = models.CharField(max_length=30, null=True, blank=True)                   # 본전공
     second_major = models.CharField(max_length=30, null=True, blank=True)   # 2전공
     third_major = models.CharField(max_length=30, null=True, blank=True)    # 3전공
     is_operator = models.BooleanField(default=False)                        # 기본값은 '학생 유저'
     # photo = models.ImageField()   # 학생의 사진
+
+    USERNAME_FIELD = 'email'
+
+    REQUIRED_FIELDS = ['name']
 
     def __str__(self):
         return f"{self.name} | {self.student_number} | {self.first_major}"
@@ -37,7 +44,7 @@ class Crew(models.Model):
 
 # 운영자 관계 모델
 class Administrator(models.Model):
-    user = models.ForeignKey(User, related_name="administer", on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="administer", on_delete=models.CASCADE)
     crew = models.ForeignKey(Crew, related_name="administer", on_delete=models.CASCADE)
 
     def __str__(self):
@@ -75,7 +82,7 @@ class PostImage(models.Model):
 
 # 모집공고 지원하기
 class Apply(models.Model):
-    user = models.ForeignKey(User, related_name='apply', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='apply', on_delete=models.CASCADE)
     post = models.ForeignKey(Post, related_name='apply', on_delete=models.CASCADE)
     apply_at = models.DateTimeField(auto_now=True)
     document_pass = models.BooleanField(default=False, null=True, blank=True) # 서류 통과 여부, 기본값 False
@@ -88,7 +95,7 @@ class Apply(models.Model):
 
 # 모집공고 찜하기    
 class Like(models.Model):
-    user = models.ForeignKey(User, related_name='like', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='like', on_delete=models.CASCADE)
     post = models.ForeignKey(Post, related_name='like', on_delete=models.CASCADE)
 
     def __str__(self):
