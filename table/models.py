@@ -1,11 +1,52 @@
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
+
+# 유저를 생성하는 매니저 클래스
+class UserManager(BaseUserManager):    
+    
+    use_in_migrations = True    
+    
+    def create_user(self, email, name, password):        
+        
+        if not email :
+            raise ValueError('must have user email(ID)')
+        if not name :
+            raise ValueError('must have user name')
+        if not password :
+            raise ValueError('must have user password')
+        
+        user = self.model(            
+            email = self.normalize_email(email),            
+            name = name        
+        )
+        user.set_password(password)     
+        user.save(using=self._db)  
+
+        return user     
+    
+    def create_superuser(self, email, name, password ):        
+       
+        user = self.create_user(            
+            email = self.normalize_email(email),            
+            name = name,            
+            password=password
+        )
+
+        user.is_admin = True    
+        user.is_superuser = True 
+        user.is_staff = True
+        user.save(using=self._db)
+
+        return user
 
 # 재정의한 User
-class User(AbstractUser):
-    email = models.EmailField(unique=True)
+class User(AbstractBaseUser, PermissionsMixin):
+
+    objects = UserManager()
+
+    email = models.EmailField(max_length=100, unique=True)
     name = models.CharField(max_length=30)             # 사용자의 이름 validators=[validate_unique_nickname]
     sogang_mail = models.CharField(max_length=100, unique=True, null=True, blank=True)     # 서강 이메일
     student_number = models.CharField(max_length=20, unique=True, null=True, blank=True)   # 학번 ex) 20201111
@@ -14,6 +55,9 @@ class User(AbstractUser):
     third_major = models.CharField(max_length=30, null=True, blank=True)    # 3전공
     is_operator = models.BooleanField(default=False)                        # 기본값은 '학생 유저'
     # photo = models.ImageField()   # 학생의 사진
+
+    is_admin = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
 
