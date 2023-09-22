@@ -46,6 +46,12 @@ INSTALLED_APPS = [
 
     # apps
     'table',
+    'accounts',
+    'home',
+    'post',
+    'mypage',
+    'apply',
+    'evaluation',
 
 ]
 
