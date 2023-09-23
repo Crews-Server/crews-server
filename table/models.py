@@ -27,7 +27,7 @@ class UserManager(BaseUserManager):
         return user     
     
     def create_superuser(self, email, name, password ):        
-       
+
         user = self.create_user(            
             email = self.normalize_email(email),            
             name = name,            
@@ -60,9 +60,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'email'  # 기본적으로 username으로 사용할 필드를 email 필드로 수정
 
-    REQUIRED_FIELDS = ['name']
+    REQUIRED_FIELDS = ['name'] # User 객체 생성할 때 필수적으로 제공해야 하는 필드 리스트.
 
     def __str__(self):
         return f"{self.name} | {self.student_number} | {self.first_major}"
