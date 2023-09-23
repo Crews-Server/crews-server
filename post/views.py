@@ -12,11 +12,13 @@ from django.core.exceptions import ObjectDoesNotExist
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 def get_crew_info(request):
+    # 테스트 완료
     
     post_title = request.GET.get('post_title')  # 클라이언트로부터 공고(Post)의 title을 전달 받음 (url 쿼리 파라미터로 넘김)
+    crew_name = request.GET.get('crew_name')  # 클라이언트로부터 crew의 이름 가져옴
 
     try:
-        post = Post.objects.get(title = post_title)
+        post = Post.objects.get(title = post_title, crew__crew_name = crew_name)
     except Post.DoesNotExist:
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
     
@@ -31,6 +33,9 @@ def get_crew_info(request):
     }
 
     return Response(context, status=status.HTTP_200_OK)
+
+
+
 
 
 
