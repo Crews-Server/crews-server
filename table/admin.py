@@ -16,3 +16,5 @@ admin.site.register(CheckBoxOption)
 admin.site.register(CheckBoxAnswer)
 admin.site.register(File)
 admin.site.register(FileAnswer)
+
+
