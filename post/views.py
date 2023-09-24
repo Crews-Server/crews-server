@@ -14,11 +14,13 @@ from django.core.exceptions import ObjectDoesNotExist
 def get_crew_info(request):
     # post-man 테스트 완료
     
-    post_title = request.GET.get('post_title')  # 클라이언트로부터 공고(Post)의 title을 전달 받음 (url 쿼리 파라미터로 넘김)
-    crew_name = request.GET.get('crew_name')  # 클라이언트로부터 crew의 이름 가져옴
+    # post_title = request.GET.get('post_title')  # 클라이언트로부터 공고(Post)의 title을 전달 받음 (url 쿼리 파라미터로 넘김)
+    # crew_name = request.GET.get('crew_name')  # 클라이언트로부터 crew의 이름 가져옴
+
+    post_id = request.GET.get('id')
 
     try:
-        post = Post.objects.get(title = post_title, crew__crew_name = crew_name)
+        post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
     
@@ -41,14 +43,16 @@ def get_crew_info(request):
 def like_post(request):
 
     user = request.user
-    post_title = request.data.get('post_title')  # 클라이언트로부터 공고(Post)의 title을 받음
-    crew_name = request.data.get('crew_name')  # 클라이언트로부터 crew의 이름 받음
+    # post_title = request.data.get('post_title')  # 클라이언트로부터 공고(Post)의 title을 받음
+    # crew_name = request.data.get('crew_name')  # 클라이언트로부터 crew의 이름 받음
+
+    post_id = request.GET.get('id')
 
     if(user.is_operator == True):  
-        return Response({"error": "He is Administrator, not general User!"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return Response({"error": "He is Administrator, not general User!"}, status=status.HTTP_403_FORBIDDEN)
     
     try:
-        post = Post.objects.get(title = post_title, crew__crew_name = crew_name)
+        post = Post.objects.get(id = post_id)
     except Post.DoesNotExist:
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
     
