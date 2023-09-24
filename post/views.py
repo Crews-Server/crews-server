@@ -12,6 +12,7 @@ from django.utils import timezone  # now = timezone.now() 이렇게 사용하기
 
 # 1. 동아리 정보 반환하는 api (GET), 이건 기본 정보 반환이라 로그인 유무 상관 없음.
 # 동아리 이름, 동아리 한줄 소개, 동아리 프로필 사진, 동아리 카테고리 등의 정보 반환
+# + 추가 -> 동아리 리쿠르팅 일정 정보도 같이 반환해서 주기
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])
 def get_crew_info(request):
@@ -75,7 +76,26 @@ def like_post(request):
     return Response({"message": "Like has been removed."}, status=status.HTTP_200_OK)
 
 
+# 3번 해당 Post의 기본 정보 반환하기
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def post_content(request):
+    # post-man 테스트 완료
 
+    post_id = request.GET.get('id')  # GET이니 쿼리 파라미터로 받기
+
+    try:
+        post = Post.objects.get(id = post_id)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = PostContent_PostSerializer(post)
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+    
 
     
 
