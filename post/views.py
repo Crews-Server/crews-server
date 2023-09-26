@@ -40,6 +40,7 @@ def get_crew_info(request):
 
     return Response(context, status=status.HTTP_200_OK)
 
+
 # 2. 유저가 해당 Post 찜 등록 or 해제 하기
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
@@ -91,6 +92,68 @@ def post_content(request):
     
     serializer = PostContent_PostSerializer(post)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# 4번 지원서 버튼 관련 api  (GET)
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])  # 로그인 제약 없음
+def click_apply_button(request):
+    user = request.user
+    post_id = request.GET.get('id')  # GET이니 쿼리 파라미터로 받기
+
+    try:
+        post = Post.objects.get(id = post_id)
+    except Post.DoesNotExist:
+        return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    now = timezone.now() # 현재 시간 불러오기
+
+    if not user.is_authenticated:   # 해당 유저가 로그인 하지 않고 들어온 눈팅 유저 일 때
+        context = {"message": "He is not login user!",}
+        if now < post.apply_end_date:
+            context["button_status"] = "지원서 작성하기"
+        else:
+            context["button_status"] = "지원 기간 아님"
+
+        return Response(context, status=status.HTTP_200_OK)
+
+    # 만약 해당 User가 저 Post의 작성자라면 일반 유저와 달리 지원폼 수정하기, 지원폼 평가하기와 같은 것이 떠야 함
+    if user.is_operator == True:
+        try:
+            admin = Administrator.objects.get(user=user, post=post)
+            context = {
+                "message": "He is This post's Administrator!",
+                "button_status" : "지원폼 수정하기",
+                # "additional_button" : "지원폼 평가하기"
+            }
+            return Response(context, status=status.HTTP_200_OK)
+        except Administrator.DoesNotExist: # user가 운영진 계정이라 할지라도,해당 post 운영진 아니면 상관x 
+            pass
+    
+    # 일반 유저이거나, 동아리 관리자여도 해당 Post를 올린 동아리의 관리자가 아닐 경우! 
+    now = timezone.now() # 현재 시간 다시 불러오기(미세한 오차를 방지하기 위해 혹시 몰라 다시 불러옴)
+    context = {"message": "He is general user!",}
+
+    try:
+        apply = Apply.objects.get(user=user, post=post)
+    except Apply.DoesNotExist: # 해당 post에 지원 신청하지 않았을 때 
+        if now < post.apply_end_date:
+            context["button_status"]  = "지원서 작성하기"
+        else:
+            context["button_status"] = "지원 기간 아님"
+        return Response(context, status=status.HTTP_200_OK)
+
+    # apply가 존재할 때 => 로그인한 user가 해당 Post를 이미 지원 했을 때
+    if now < post.apply_end_date:
+        context["button_status"] = "지원서 수정하기"
+    elif post.apply_end_date <= now and now < post.document_result_date: # 서류 마감시간부터 서류(1차) 합격자 발표시간 사이일 때
+        context["button_status"] = "지원 기간 아님"
+    elif post.document_result_date <= now and now < post.final_result_date:  # 1차 발표부터 최종 2차(최종)발표 사이까지
+        context["button_status"] = "1차 결과 확인"
+    elif post.final_result_date <= now and apply.document_pass == True:  # 2차 발표 시간 이후이면서 1차 합격한 사람의 경우
+        context["button_status"] = "2차 결과 확인"  
+    
+    return Response(context, status=status.HTTP_200_OK)
 
 
 
