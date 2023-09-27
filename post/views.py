@@ -154,17 +154,3 @@ def click_apply_button(request):
         context["button_status"] = "2차 결과 확인"  
     
     return Response(context, status=status.HTTP_200_OK)
-
-
-
-
-    
-
-    
-
-
-
-
-
-
-
