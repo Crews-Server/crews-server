@@ -48,9 +48,20 @@ class AdministratorSerializer(serializers.ModelSerializer):
         fields = '__all__'   
 
 class PostSerializer(serializers.ModelSerializer):
+    total_likes = serializers.SerializerMethodField()    # 시리얼라이저 메서드 필드 사용
+    total_applies = serializers.SerializerMethodField()  # 시리얼라이저 메서드 필드 사용
     class Meta:
         model = Post
-        fields = '__all__'   
+        fields = ['id', 'apply_start_date', 'apply_end_date', 'document_result_date', 'has_interview', 'interview_start_date', 
+                'interview_end_date', 'final_result_date', 'requirement_target', 'title', 'content', 'membership_fee', 'created_at', 
+                'progress', 'image', 'total_likes', 'total_applies']
+        
+    def get_total_likes(self, obj):     # 시리얼라이저 메서드 필드에 저장될 value를 가져오기 위한 메서드 get_필드이름
+        return obj.total_like_count()   # 여기서 obj는 현재 직렬화를 하려고 하는 Post의 그 객체를 의미
+                                        # 여기서 return 하면 시리얼라이저 안에 있는 메서드 필드에 값이 저장!
+    
+    def get_total_applies(self, obj):  
+        return obj.total_apply_count()
 
 class PostImageSerializer(serializers.ModelSerializer):
     class Meta:
