@@ -102,9 +102,9 @@ class Post(models.Model):
     apply_end_date = models.DateTimeField()       # 서류 마감 날짜
     document_result_date = models.DateTimeField() # 서류 발표 날짜
     has_interview = models.BooleanField(default=True)  # 면접 여부, 기본값 True
-    interview_start_date = models.DateTimeField()   # 면접 시작 날짜
-    interview_end_date = models.DateTimeField()     # 면접 종료 날짜
-    final_result_date = models.DateTimeField()      # 최종 발표 날짜
+    interview_start_date = models.DateTimeField(null=True, blank=True)   # 면접 시작 날짜
+    interview_end_date = models.DateTimeField(null=True, blank=True)     # 면접 종료 날짜
+    final_result_date = models.DateTimeField(null=True, blank=True)      # 최종 발표 날짜
     requirement_target = models.TextField()   # 모집 대상 명시 텍스트
     title = models.CharField(max_length=200)   # 공고 제목
     content = models.TextField()               # 공고 내용
