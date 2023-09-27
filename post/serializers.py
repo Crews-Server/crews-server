@@ -14,8 +14,8 @@ class PostContent_PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['id', 'apply_start_date', 'apply_end_date', 'document_result_date', 'has_interview', 'interview_start_date', 
-                'interview_end_date', 'final_result_date', 'requirement_target', 'title', 'content', 'membership_fee', 'created_at',
-                'image' ]
+                'interview_end_date', 'final_result_date', 'requirement_target', 'title', 'content', 'membership_fee', 'created_at', 
+                'progress', 'image' ]
 
         
 
