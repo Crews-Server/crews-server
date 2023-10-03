@@ -112,8 +112,8 @@ class Post(models.Model):
     crew = models.ForeignKey(Crew, related_name="post", on_delete=models.CASCADE) # Crew의 FK
     created_at = models.DateTimeField(auto_now_add=True) # 모집 공고 생성일
     progress = models.CharField(max_length=300)
-    pass_message = models.CharField(max_length=500)
-    fail_message = models.CharField(max_length=500)
+    pass_message = models.CharField(max_length=500, null=True, blank=True)
+    fail_message = models.CharField(max_length=500, null=True, blank=True)
 
     # def total_apply_count(self):  # 해당 Post에 연결된 apply들이 몇 개인지 계산해서 반환해주는 메서드
     #     return self.apply.count() # related_name 'apply'를 사용함. 따라서 역참조 할 때 apply 이용!
