@@ -79,4 +79,4 @@ def application_create(request, post_id):
             if serializer.is_valid(raise_exception=True):
                 saved = serializer.save()
 
-    return Response({"success": "Application is created"}, status=status.HTTP_201_CREATED)
+    return Response({"message": "Application is created"}, status=status.HTTP_201_CREATED)
