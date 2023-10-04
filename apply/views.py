@@ -1,11 +1,11 @@
 from rest_framework import generics, status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer
 from .permissions import IsAdministrator
 
-from table.models import Post
+from table.models import Post, Administrator
 
 
 # 모집 공고를 생성하는 api
@@ -26,12 +26,17 @@ request body
     ...
 """
 @api_view(['POST'])
+@permission_classes([IsAdministrator])
 def application_create(request, post_id):
 
     try:
         post = Post.objects.get(id=post_id)
     except Post.DoesNotExist:
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+    administrator = Administrator.objects.get(user=request.user)
+    if administrator.crew != post.crew:
+        return Response({"error": "Request user is not Post's crew administrator"}, status=status.HTTP_403_FORBIDDEN)
 
     # section 저장
     section_serailizer = SectionSerializer(
