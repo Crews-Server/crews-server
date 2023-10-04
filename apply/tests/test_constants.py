@@ -35,3 +35,51 @@ BAD_POST_REQUEST = {"apply_start_date": "2023-09-20 00:00:00",
                     "membership_fee": "1년 활동 기간 동안 동아리에서 사용할 6만원",
                     "crew": 1,
                     "progress": "1차 서류만 진행합니다."}
+
+
+'''
+지원서 중 장문형 문항 생성 요청
+'''
+LONG_SENTENCE_CREATE_REQUEST = {
+    "section_name": "공통",
+    "description": "모든 사람이 답변해야 하는 공통 문항입니다.",
+    "question":
+    [
+        {
+            "type": "long_sentence",
+            "is_essential": True,
+            "question": "자기소개하세요.",
+            "letter_count_limit": 300
+        },
+        {
+            "type": "long_sentence",
+            "is_essential": True,
+            "question": "지원 동기를 적어주세요.",
+            "letter_count_limit": 500
+        }
+    ]
+}
+
+'''
+지원서 중 객관식 & 파일 문항 생성 요청
+'''
+CHECKBOX_FILE_CREATE_REQUEST = {
+    "section_name": "공통",
+    "description": "모든 사람이 답변해야 하는 공통 문항입니다.",
+    "question":
+    [
+        {
+            "type": "checkbox",
+            "is_essential": True,
+            "question": "옵션 중 하나를 선택하세요.",
+            "answer_minumum": 1,
+            "answer_maximum": 1,
+            "options": ['옵션 1', '옵션 2', '옵션 3']
+        },
+        {
+            "type": "file",
+            "is_essential": True,
+            "question": "포트폴리오 파일을 첨부해주세요."
+        }
+    ]
+}
