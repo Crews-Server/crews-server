@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.test import APIClient
-from table.models import Crew, Post, Section, LongSentence, CheckBox, CheckBoxOption, File
+from table.models import Crew, Post, Section, LongSentence, CheckBox, CheckBoxOption, File, User, Administrator
 from .test_constants import LONG_SENTENCE_CREATE_REQUEST, CHECKBOX_FILE_CREATE_REQUEST
 
 
@@ -22,11 +22,15 @@ class ApplicationCreateTest(TestCase):
                             membership_fee="0",
                             crew=self.crew,
                             progress="0")
+        self.user = User.objects.create_user(email="test@naver.com", name="test user", password="1234")
+        self.user.is_operator = True
+        self.administrator = Administrator.objects.create(user=self.user, crew=self.crew)
 
     # 공통 섹션과 장문형 문항을 생성한다.
     def long_sentence_question_test(self):
         # given & when
         client = APIClient()
+        client.force_authenticate(user=self.user)
         response = client.post(self.url,
                                data=LONG_SENTENCE_CREATE_REQUEST,
                                format='json')
@@ -46,6 +50,7 @@ class ApplicationCreateTest(TestCase):
     def checkbox_file_question_test(self):
         # given & when
         client = APIClient()
+        client.force_authenticate(user=self.user)
         response = client.post(self.url,
                                data=CHECKBOX_FILE_CREATE_REQUEST,
                                format='json')
@@ -54,7 +59,6 @@ class ApplicationCreateTest(TestCase):
         saved_checkbox = get_object_or_404(CheckBox, question=CHECKBOX_FILE_CREATE_REQUEST["question"][0]["question"])
         saved_options = get_list_or_404(CheckBoxOption, check_box=saved_checkbox)
         saved_file_question = get_object_or_404(File, question=CHECKBOX_FILE_CREATE_REQUEST["question"][1]["question"])
-
         self.assertEqual(response.status_code, 201)
         self.assertEqual(saved_checkbox.answer_minumum, CHECKBOX_FILE_CREATE_REQUEST["question"][0]["answer_minumum"])
         self.assertEqual(saved_options[0].option, CHECKBOX_FILE_CREATE_REQUEST["question"][0]["options"][0])
