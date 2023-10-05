@@ -11,7 +11,7 @@ User = get_user_model()
 
 # 모집 공고를 생성한다
 class PostCreateTest(TestCase):
-    url = '/apply/'
+    url = '/apply/post/'
 
     def setUp(self):
         self.crew = Crew.objects.create(id=1, crew_name="멋쟁이사자처럼",

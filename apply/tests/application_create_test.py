@@ -7,7 +7,7 @@ from .test_constants import LONG_SENTENCE_CREATE_REQUEST, CHECKBOX_FILE_CREATE_R
 
 # 지원서를 생성한다
 class ApplicationCreateTest(TestCase):
-    url = '/apply/1/application/'
+    url = '/apply/application/'
 
     def setUp(self):
         self.crew = Crew.objects.create(id=1, crew_name="0", description="0")

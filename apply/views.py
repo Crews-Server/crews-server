@@ -27,10 +27,10 @@ request body
 """
 @api_view(['POST'])
 @permission_classes([IsAdministrator])
-def application_create(request, post_id):
+def application_create(request):
 
     try:
-        post = Post.objects.get(id=post_id)
+        post = Post.objects.get(id=request.data["post_id"])
     except Post.DoesNotExist:
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
     
@@ -42,7 +42,7 @@ def application_create(request, post_id):
     section_serailizer = SectionSerializer(
         data={
             "section_name": request.data["section_name"],
-            "post": post_id,
+            "post": request.data["post_id"],
             "description": request.data["description"]
         }
     )

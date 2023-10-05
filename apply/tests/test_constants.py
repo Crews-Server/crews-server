@@ -41,6 +41,7 @@ BAD_POST_REQUEST = {"apply_start_date": "2023-09-20 00:00:00",
 지원서 중 장문형 문항 생성 요청
 '''
 LONG_SENTENCE_CREATE_REQUEST = {
+    "post_id": 1,
     "section_name": "공통",
     "description": "모든 사람이 답변해야 하는 공통 문항입니다.",
     "question":
@@ -64,6 +65,7 @@ LONG_SENTENCE_CREATE_REQUEST = {
 지원서 중 객관식 & 파일 문항 생성 요청
 '''
 CHECKBOX_FILE_CREATE_REQUEST = {
+    "post_id": 1,
     "section_name": "공통",
     "description": "모든 사람이 답변해야 하는 공통 문항입니다.",
     "question":
