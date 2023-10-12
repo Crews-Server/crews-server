@@ -142,6 +142,7 @@ class Apply(models.Model):
     document_pass = models.BooleanField(default=False, null=True, blank=True) # 서류 통과 여부, 기본값 False
     interview_date = models.DateTimeField(null=True, blank=True) # 면접 날짜
     final_pass = models.BooleanField(default=False, null=True, blank=True)    # 최종합격 여부, 기본값 False
+    score_avg = models.FloatField(default=0)
 
     def __str__(self):
         return f"{self.user} 의 {self.Post} 지원"
@@ -227,3 +228,13 @@ class FileAnswer(models.Model):
     file = models.ForeignKey(File, related_name='file_answer', on_delete=models.CASCADE)
     apply = models.ForeignKey(Apply, related_name="file_answer", on_delete=models.CASCADE)
     # uploaded_file = models.FieldFile()
+
+
+class Comment(models.Model):
+    apply = models.ForeignKey(Apply, related_name="comment", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="comment", on_delete=models.CASCADE)
+
+class Score(models.Model):
+    apply = models.ForeignKey(Apply, related_name="score", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="score", on_delete=models.CASCADE)
+    value = models.IntegerField(default=0)  # 디폴트 0으로 세팅
