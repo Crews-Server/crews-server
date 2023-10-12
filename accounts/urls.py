@@ -6,4 +6,6 @@ urlpatterns = [
     path('register/', UserRegisterView.as_view(), name='user-register'),
     path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    path('sogang-mail-check/', sogang_mail_check, name='sogang-mail-check'),
 ]
