@@ -43,7 +43,8 @@ smtp_port = 587
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def sogang_mail_check(request):
-    
+    # post-man 테스트 완료!
+
     sogang_mail = request.data.get('sogang_mail')  # 서강 이메일 클라이언트로부터 body로 받아오기!
     recv_email = sogang_mail
 
@@ -78,7 +79,7 @@ def sogang_mail_check(request):
 
         context = {
             "message": "Mail sent successfully!",
-            "인증번호" : num_str,
+            "verification_code" : num_str,
         }
         return Response(context, status=status.HTTP_200_OK)
         
@@ -89,6 +90,24 @@ def sogang_mail_check(request):
     }
     return Response(context, status=status.HTTP_403_FORBIDDEN)
 
+
+# 5. 유저가 입력한 인증번호가 올바른 인증번호인지 확인하는 api
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def verification_code_check(request):
+    # post-man 테스트 완료!
+
+    user_input_code = request.data.get('user_input_code')  # 사용자가 메일을 확인한 뒤 입력한 코드
+    verification_code = request.data.get('verification_code') # 실제 해당 사용자의 메일로 보낸 코드
+
+    context = {}
+
+    if user_input_code == verification_code:
+        context["message"] = "Verification successful!"
+        return Response(context, status=status.HTTP_200_OK)
+    else:
+        context["message"] = "Verification denied. Invalid code."
+        return Response(context, status=status.HTTP_403_FORBIDDEN)
 
 
     
