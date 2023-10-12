@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import (User, Category, Crew, Administrator, Post, PostImage, Apply, Like, Section, LongSentence, LongSentenceAnswer, CheckBox,
-                    CheckBoxOption, CheckBoxAnswer, File, FileAnswer)
+                    CheckBoxOption, CheckBoxAnswer, File, FileAnswer, Comment, Score)
 
 # 회원가입할 때 쓰세요
 # class UserRegisterSerializer(serializers.ModelSerializer):
@@ -116,4 +116,14 @@ class FileSerializer(serializers.ModelSerializer):
 class FileAnswerSerializer(serializers.ModelSerializer):
     class Meta:
         model = FileAnswer
+        fields = '__all__'
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = '__all__'
+
+class ScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Score
         fields = '__all__'

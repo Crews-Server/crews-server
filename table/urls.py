@@ -22,6 +22,8 @@ router.register(r'check_box_option', CheckBoxOptionViewSet)
 router.register(r'check_box_answer', CheckBoxAnswerViewSet)
 router.register(r'file', FileViewSet)
 router.register(r'file_answer', FileAnswerViewSet)
+router.register(r'comment', CommentViewSet)
+router.register(r'score', ScoreViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
