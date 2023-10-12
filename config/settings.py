@@ -2,6 +2,8 @@ from pathlib import Path
 import os, json
 from django.core.exceptions import ImproperlyConfigured
 
+from datetime import timedelta
+
 # Base Directory 경로
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,8 +54,27 @@ INSTALLED_APPS = [
     'mypage',
     'apply',
     'evaluation',
-
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication', # 전역 설정!!
+                # 따라서 view에서 별도로 @authentication_classes([TokenAuthentication]) 안 해줘도 됨!!! 
+    ),
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ROTATE_REFRESH_TOKENS': False,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+    'TOKEN_TYPE_CLAIM': 'token_type',
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
