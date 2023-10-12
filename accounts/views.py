@@ -48,6 +48,14 @@ def sogang_mail_check(request):
     sogang_mail = request.data.get('sogang_mail')  # 서강 이메일 클라이언트로부터 body로 받아오기!
     recv_email = sogang_mail
 
+    # @sogang.ac.kr로 끝나는지 체크
+    if not sogang_mail.endswith('@sogang.ac.kr'):
+        context = {
+            "message": "Please provide a valid Sogang University email!",
+        }
+        return Response(context, status=status.HTTP_400_BAD_REQUEST)
+
+
     # sogang_mail 중복 체크
     try:
         user = User.objects.get(sogang_mail = sogang_mail)
@@ -107,7 +115,7 @@ def verification_code_check(request):
         return Response(context, status=status.HTTP_200_OK)
     else:
         context["message"] = "Verification denied. Invalid code."
-        return Response(context, status=status.HTTP_403_FORBIDDEN)
+        return Response(context, status=status.HTTP_400_BAD_REQUEST)
 
 
     
