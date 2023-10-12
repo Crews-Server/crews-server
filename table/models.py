@@ -171,6 +171,7 @@ class LongSentence(models.Model):
     question = models.CharField(max_length=300)  # ex) 지원자께서 지원하신 동기는 무엇인가요?
     letter_count_limit = models.IntegerField()  # 500자
     is_essential = models.BooleanField(default=True) # 해당 타입이 필수적인지 아닌지 여부
+    sequence = models.IntegerField(default=0) # 문항 순서
     section = models.ForeignKey(Section, related_name="long_sentence", on_delete=models.CASCADE)
 
     def __str__(self):
@@ -190,6 +191,7 @@ class CheckBox(models.Model):
     is_essential = models.BooleanField(default=True) # 해당 타입이 필수적인지 아닌지 여부
     answer_minumum = models.IntegerField(default=1)
     answer_maximum = models.IntegerField(default=1)
+    sequence = models.IntegerField(default=0) # 문항 순서
     section = models.ForeignKey(Section, related_name="check_box", on_delete=models.CASCADE)
 
     def __str__(self):
@@ -216,6 +218,7 @@ class CheckBoxAnswer(models.Model):
 class File(models.Model):
     question = models.CharField(max_length=300) 
     is_essential = models.BooleanField(default=True) # 해당 타입이 필수적인지 아닌지 여부
+    sequence = models.IntegerField(default=0) # 문항 순서
     section = models.ForeignKey(Section, related_name="file", on_delete=models.CASCADE)
 
     def __str__(self):
