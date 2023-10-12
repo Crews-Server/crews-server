@@ -1,11 +1,13 @@
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer
 from .permissions import IsAdministrator
 
-from table.models import Post, Administrator
+from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption
 
 
 # 모집 공고를 생성하는 api
@@ -85,3 +87,57 @@ def application_create(request):
                 saved = serializer.save()
 
     return Response({"message": "Application is created"}, status=status.HTTP_201_CREATED)
+
+
+# 모집 공고의 지원서 양식을 조회하는 api
+class Appication(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, post_id, *args, **kwargs):
+        
+        try:
+            post = Post.objects.get(id=post_id)
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        res = {}
+
+        # 공통 section 문항 조회('section')
+        common_section = Section.objects.get(post_id=post.id, section_name="공통")
+
+        common_questions = LongSentenceSerializer(LongSentence.objects.filter(section=common_section), many=True).data
+        common_questions = add_checkbox(CheckBox.objects.filter(section=common_section), common_questions)
+        common_questions.extend(FileSerializer(File.objects.filter(section=common_section), many=True).data)
+        
+        common_questions = sorted(common_questions, key=lambda x: x.get('sequence', 0))
+
+        res["공통"] = {"description": common_section.description,
+                       "questions": common_questions}
+
+        # section 별로 조회
+        section_id = request.query_params.get('section-id')
+
+        try:
+            section = Section.objects.get(id=section_id)
+        except Section.DoesNotExist:
+            return Response({"error": "Section not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        section_questions = LongSentenceSerializer(LongSentence.objects.filter(section=section), many=True).data
+        section_questions = add_checkbox(CheckBox.objects.filter(section=section), section_questions)
+        section_questions.extend(FileSerializer(File.objects.filter(section=section), many=True).data)
+
+        section_questions = sorted(section_questions, key=lambda x: x.get('sequence', 0))
+
+        res[section.section_name] = {"description": section.description,
+                                     "questions": section_questions}
+        
+        return Response(res, status=status.HTTP_200_OK)
+
+# 체크 박스 문항 조회하기
+def add_checkbox(checkbox_list, section_questions):
+    index = 0
+    for checkbox in CheckBoxSerializer(checkbox_list, many=True).data:
+        checkbox["options"] = CheckBoxOptionSerializer(CheckBoxOption.objects.filter(check_box=checkbox_list[index]), many=True).data
+        section_questions.append(checkbox)
+        index += 1
+    return section_questions
