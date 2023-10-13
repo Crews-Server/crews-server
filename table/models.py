@@ -165,11 +165,11 @@ class Apply(models.Model):
 
 # 모집공고 찜하기    
 class Like(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='like', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='like', on_delete=models.CASCADE)
     post = models.ForeignKey(Post, related_name='like', on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.user} 의 {self.Post} 찜"
+        return f"{self.user} 의 {self.post} 찜"
 
 
 # 모집공고 섹션
