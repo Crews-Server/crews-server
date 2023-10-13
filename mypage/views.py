@@ -12,7 +12,7 @@ from django.utils import timezone  # now = timezone.now() 이렇게 사용하기
 # 1. User의 기본 정보 반환해주는 GET API
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
-def get_user_info(request):
+def get_user_info(request):   # post-man 테스트 완료
     user = request.user
 
     if(user.is_operator == True): # 동아리 관계자 계정일 때
@@ -35,5 +35,32 @@ def get_user_info(request):
         serializer = GetUserInfoSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+# 2. 일반 유저의 마이페이지에서 동아리 지원서 리스트 반환해주는 GET api
+
+
+
+
+
+
+
+# 3. 일반 유저의 마이페이지에서 찜한 모집 공고 리스트 반환해주는 GET api
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_liked_post(request):
+    user = request.user
+
+    if user.is_operator == True:
+        return Response({"error": "He is Administrator, not general User!"}, status=status.HTTP_403_FORBIDDEN)
+
+    # 유저가 Like한 모든 객체 가져오기
+    liked_list = Like.objects.filter(user = user)
+
+    # 리스트 내에 Like 객체마다 연결된 Post 인스턴스 가져오기
+    post_list = [like.post for like in liked_list]
+
+    serializer = GetLikedPostSerializer(post_list, many = True)
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
