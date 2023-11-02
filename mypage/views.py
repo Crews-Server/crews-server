@@ -31,16 +31,25 @@ def get_user_info(request):   # post-man 테스트 완료
         return Response(context, status=status.HTTP_200_OK)
 
     else:  # 일반 유저 일 때
-        
         serializer = GetUserInfoSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# 2. 일반 유저의 마이페이지에서 동아리 지원서 리스트 반환해주는 GET api
+# 2. '일반 유저'의 마이페이지에서 자기가 지원한 동아리 지원서 리스트 반환해주는 GET api
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_applied_list(request): 
+    user = request.user
 
+    if user.is_operator == True:
+        return Response({"error": "He is Administrator, not general User!"}, status=status.HTTP_403_FORBIDDEN)
 
+    apply = Apply.objects.filter(user=user)
+    posts = [x.post for x in apply]  # apply에 연결되어있는 Post 객체들 다 담기!
+    
+    serializer = GetAppliedListSerializer(posts, many=True, context={'user':user})
 
-
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 
