@@ -143,7 +143,7 @@ class Post(models.Model):
 # Post의 이미지
 class PostImage(models.Model):
     # post_image = models.ImageField()
-    post = models.ForeignKey(Post, related_name='image', on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name='post_image', on_delete=models.CASCADE)
     
     def __str__(self):
         return f"{self.post} 의 사진 {self.id}"
@@ -160,7 +160,7 @@ class Apply(models.Model):
     score_avg = models.FloatField(default=0)
 
     def __str__(self):
-        return f"{self.user} 의 {self.Post} 지원"
+        return f"{self.user} 의 {self.post} 지원"
 
 
 # 모집공고 찜하기    
