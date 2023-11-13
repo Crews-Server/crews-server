@@ -18,5 +18,4 @@ admin.site.register(File)
 admin.site.register(FileAnswer)
 admin.site.register(Comment)
 admin.site.register(Score)
-
-
+admin.site.register(Evaluation)
