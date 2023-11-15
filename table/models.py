@@ -109,9 +109,7 @@ class Category(models.Model):
 class Crew(models.Model):
     crew_name = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
-    category = models.ForeignKey(
-        Category, related_name="crew", on_delete=models.SET_NULL, null=True
-    )
+    category = models.ForeignKey(Category, related_name="crew", on_delete=models.SET_NULL, null=True) 
     # photo = models.ImageField()   # 동아리의 사진
 
     def __str__(self):

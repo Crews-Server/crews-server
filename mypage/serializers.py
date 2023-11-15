@@ -17,9 +17,10 @@ class GetUserInfoSerializer(serializers.ModelSerializer):
 class GetAppliedListSerializer(serializers.ModelSerializer):
     crew_name = serializers.SerializerMethodField()
     button_status = serializers.SerializerMethodField()
+    category_name = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ['id', 'crew', 'crew_name', 'title', 'apply_end_date', 'button_status',]
+        fields = ['id', 'crew', 'category_name', 'crew_name', 'title', 'apply_end_date', 'button_status',]
 
     def get_crew_name(self, obj):
         crew = obj.crew.crew_name
@@ -42,6 +43,11 @@ class GetAppliedListSerializer(serializers.ModelSerializer):
             return "1차 결과 확인"
         elif obj.final_result_date <= now and apply.document_pass == True:  # 2차 발표 시간 이후이면서 1차 합격한 사람의 경우
             return "2차 결과 확인" 
+        
+    def get_category_name(self, obj):
+        crew = obj.crew
+        category = crew.category
+        return category.category_name
 
 
 
@@ -49,13 +55,19 @@ class GetAppliedListSerializer(serializers.ModelSerializer):
 # 3번 api 관련 시리얼라이저
 class GetLikedPostSerializer(serializers.ModelSerializer):
     crew_name = serializers.SerializerMethodField()
+    category_name = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ['crew_name', 'apply_end_date', 'title']   
+        fields = ['crew_name', 'category_name', 'apply_end_date', 'title']   
         # 동아리 이름, 지원서 마감 기한, 모집글 제목
 
     def get_crew_name(self, obj):
         return obj.crew.crew_name
+    
+    def get_category_name(self, obj):
+        crew = obj.crew
+        category = crew.category
+        return category.category_name
 
 
 
