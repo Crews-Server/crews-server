@@ -52,7 +52,6 @@ def get_applied_list(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
 # 3. '일반 유저'의 마이페이지에서 찜한 모집 공고 리스트 반환해주는 GET api
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
@@ -74,4 +73,29 @@ def get_liked_post(request):
 
 
 # 4. '동아리 계정'의 마이페이지에서 자신들이 올린 모집 공고 리스트 반환해주는 GET api
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_crews_posts(request):
+    user = request.user
+    
+    if user.is_operator != True:
+        return Response({"error": "This User is not Crew's operator"}, status=status.HTTP_400_BAD_REQUEST)
+
+    try:
+        administrator = Administrator.objects.get(user = user)
+    except:
+        pass
+
+    crew = administrator.crew
+
+    post_List = Post.objects.filter(crew = crew)
+
+    if not post_List.exists(): #posts 리스트가 비어있을 때 -> 아직 공고를 올리지 않았음을 알려줘야!
+        return Response({"message": "No posts found for this crew"}, status=status.HTTP_200_OK)
+    
+    serializer = GetCrewsPostsSerializer(post_List, many=True, context={'user':user})
+
+    return Response(serializer.data, status=status.HTTP_200_OK)
+
+
 
