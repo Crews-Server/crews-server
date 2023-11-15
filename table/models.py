@@ -166,6 +166,19 @@ class PostImage(models.Model):
     def __str__(self):
         return f"{self.post} 의 사진 {self.id}"
 
+# 평가 모델
+class Evaluation(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="evaluation"
+    )
+    # apply = models.ForeignKey(
+    #     Apply, on_delete=models.CASCADE, related_name="evaluation"
+    # )
+    score = models.IntegerField()
+    comment = models.TextField()
+
+    def __str__(self):
+        return f"Evaluation by {self.user.name} for {self.apply}"
 
 # 모집공고 지원
 class Apply(models.Model):
@@ -182,6 +195,8 @@ class Apply(models.Model):
         default=False, null=True, blank=True
     )  # 최종합격 여부, 기본값 False
     score_avg = models.FloatField(default=0)
+
+    evaluation = models.ForeignKey(Evaluation, related_name="apply", on_delete=models.CASCADE) # 속성 추가!
 
     def __str__(self):
         return f"{self.user} 의 {self.post} 지원"
@@ -296,18 +311,4 @@ class Score(models.Model):
     value = models.IntegerField(default=0)  # 디폴트 0으로 세팅
 
 
-# 평가 모델
-class Evaluation(models.Model):
-    evaluator = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="evaluations"
-    )
-    apply = models.ForeignKey(
-        Apply, on_delete=models.CASCADE, related_name="evaluations"
-    )
-    score = models.IntegerField()
-    comment = models.TextField()
-    document_passed = models.BooleanField(default=False)
-    final_passed = models.BooleanField(default=False)
 
-    def __str__(self):
-        return f"Evaluation by {self.evaluator.name} for {self.apply}"
