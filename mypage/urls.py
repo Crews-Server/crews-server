@@ -3,6 +3,7 @@ from .views import *
 
 urlpatterns = [
     path('get-user-info/', get_user_info, name='get-user-info'),                 # 1번
-    path('get-applied-list/', get_applied_list, name="get-applied-list"),                                                                 # 2번
+    path('get-applied-list/', get_applied_list, name="get-applied-list"),        # 2번                                                        
     path("get-liked-post/", get_liked_post, name="get-liked-post"),              # 3번
+    path("get-crews-posts/", get_crews_posts, name="get-crews-posts"), # 4번
 ]

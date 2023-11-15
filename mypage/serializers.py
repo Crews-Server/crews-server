@@ -55,10 +55,11 @@ class GetAppliedListSerializer(serializers.ModelSerializer):
 # 3번 api 관련 시리얼라이저
 class GetLikedPostSerializer(serializers.ModelSerializer):
     crew_name = serializers.SerializerMethodField()
+    button_status = serializers.SerializerMethodField()
     category_name = serializers.SerializerMethodField()
     class Meta:
         model = Post
-        fields = ['crew_name', 'category_name', 'apply_end_date', 'title']   
+        fields = ['id','crew_name', 'category_name', 'apply_end_date', 'title',]   
         # 동아리 이름, 지원서 마감 기한, 모집글 제목
 
     def get_crew_name(self, obj):
@@ -68,8 +69,36 @@ class GetLikedPostSerializer(serializers.ModelSerializer):
         crew = obj.crew
         category = crew.category
         return category.category_name
+    
+# 4번 api 관련 시리얼라이저    
+class GetCrewsPostsSerializer(serializers.ModelSerializer):
+    crew_name = serializers.SerializerMethodField()
+    category_name = serializers.SerializerMethodField()
+    button_status = serializers.SerializerMethodField()
+    class Meta:
+        model = Post
+        fields = ['id', 'crew', 'category_name', 'crew_name', 'title', 'apply_end_date', 'button_status',]
 
+    def get_crew_name(self, obj):
+        crew = obj.crew.crew_name
+        return crew
 
+    def get_button_status(self, obj):
+        user = self.context.get('user') # user 받아오기
+        now = timezone.now()
+
+        if now < obj.apply_end_date:
+            return "모집 공고 수정하기"
+        elif obj.apply_end_date <= now and now < obj.document_result_date: # 서류 마감시간부터 서류(1차) 합격자 발표시간 사이일 때
+            return "지원서 평가하기"
+        elif obj.document_result_date <= now and now < obj.final_result_date:  # 1차 발표부터 최종 2차(최종)발표 사이까지
+            return "최종 결과 입력하기"
+
+        
+    def get_category_name(self, obj):
+        crew = obj.crew
+        category = crew.category
+        return category.category_name
 
 
 
