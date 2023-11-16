@@ -21,6 +21,8 @@ def get_normal_user_info(request):   # post-man 테스트 완료
     serializer = GetNormalUserInfoSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+# 2번 관리자 User의 동아리 정보 반환해주는 GET API
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def get_operator_user_info(request):
