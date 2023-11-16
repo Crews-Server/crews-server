@@ -5,14 +5,14 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django.utils import timezone  # now = timezone.now() 이렇게 사용하기
 
-class GetUserInfoSerializer(serializers.ModelSerializer):
+class GetNormalUserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'email', 'name', 'sogang_mail', 'student_number', 'first_major', 'second_major', 'third_major', 'is_operator',]  
         # 나중에 'photo'도 추가!!
 
 
-# 2번 api 관련 시리얼라이저
+# 3번 api 관련 시리얼라이저
 
 class GetAppliedListSerializer(serializers.ModelSerializer):
     crew_name = serializers.SerializerMethodField()
@@ -52,7 +52,7 @@ class GetAppliedListSerializer(serializers.ModelSerializer):
 
 
 
-# 3번 api 관련 시리얼라이저
+# 4번 api 관련 시리얼라이저
 class GetLikedPostSerializer(serializers.ModelSerializer):
     crew_name = serializers.SerializerMethodField()
     button_status = serializers.SerializerMethodField()
@@ -70,7 +70,7 @@ class GetLikedPostSerializer(serializers.ModelSerializer):
         category = crew.category
         return category.category_name
     
-# 4번 api 관련 시리얼라이저    
+# 5번 api 관련 시리얼라이저    
 class GetCrewsPostsSerializer(serializers.ModelSerializer):
     crew_name = serializers.SerializerMethodField()
     category_name = serializers.SerializerMethodField()
