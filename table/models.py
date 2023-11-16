@@ -182,6 +182,8 @@ class Apply(models.Model):
         default=False, null=True, blank=True
     )  # 최종합격 여부, 기본값 False
     score_avg = models.FloatField(default=0)
+    
+    # 면접 날짜 장소 시간 담는 변수 하나 생성
 
     def __str__(self):
         return f"{self.user} 의 {self.post} 지원"
@@ -267,7 +269,7 @@ class CheckBoxOption(models.Model):
     )
 
     def __str__(self):
-        return f"{self.check_box}에 대한 보기 {self.name}"
+        return f"{self.check_box}에 대한 보기 {self.option}"
 
 
 # 체크박스에 대한 답
