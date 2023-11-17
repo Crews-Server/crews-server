@@ -38,6 +38,22 @@ BAD_POST_REQUEST = {"apply_start_date": "2023-09-20 00:00:00",
 
 
 '''
+상시 모집 공고 생성 요청
+- apply_end_date와 document_result_date가 항상 '9999-12-31 23:59:59.999999'이다.
+'''
+ON_GOING_POST_REQUEST = {"apply_start_date": "2023-09-20 00:00:00",
+                         "apply_end_date": "9999-12-31 23:59:59.999999",
+                         "document_result_date": "9999-12-31 23:59:59.999999",
+                         "has_interview": "false",
+                         "requirement_target": "열정 있는 미래 창업인들",
+                         "title": "서강대학교 멋쟁이사자처럼 12기에서 신입 부원을 모집합니다!",
+                         "content": "마구마구지원부탁요",
+                         "membership_fee": "1년 활동 기간 동안 동아리에서 사용할 6만원",
+                         "crew": 1,
+                         "progress": "1차 서류만 진행합니다."}
+
+
+'''
 지원서 중 장문형 문항 생성 요청
 '''
 LONG_SENTENCE_CREATE_REQUEST = {
