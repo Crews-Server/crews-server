@@ -80,3 +80,11 @@ class FileViewSet(ModelViewSet):
 class FileAnswerViewSet(ModelViewSet):
     queryset = FileAnswer.objects.all()
     serializer_class = FileAnswerSerializer
+
+class CommentViewSet(ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+class ScoreViewSet(ModelViewSet):
+    queryset = Score.objects.all()
+    serializer_class = ScoreSerializer

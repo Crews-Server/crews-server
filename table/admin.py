@@ -12,9 +12,11 @@ admin.site.register(Like)
 admin.site.register(Section)
 admin.site.register(LongSentence)
 admin.site.register(LongSentenceAnswer)
+admin.site.register(CheckBox)
 admin.site.register(CheckBoxOption)
 admin.site.register(CheckBoxAnswer)
 admin.site.register(File)
 admin.site.register(FileAnswer)
-
-
+admin.site.register(Comment)
+admin.site.register(Score)
+admin.site.register(Evaluation)

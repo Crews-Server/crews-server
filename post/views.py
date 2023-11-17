@@ -50,7 +50,7 @@ def like_post(request):
     # post_title = request.data.get('post_title')  # 클라이언트로부터 공고(Post)의 title을 받음
     # crew_name = request.data.get('crew_name')  # 클라이언트로부터 crew의 이름 받음
 
-    post_id = request.data.get('id')
+    post_id = request.data.get('post_id')
 
     if(user.is_operator == True):  
         return Response({"error": "He is Administrator, not general User!"}, status=status.HTTP_403_FORBIDDEN)
