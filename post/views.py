@@ -21,7 +21,7 @@ def get_crew_info(request):
     # post_title = request.GET.get('post_title')  # 클라이언트로부터 공고(Post)의 title을 전달 받음 (url 쿼리 파라미터로 넘김)
     # crew_name = request.GET.get('crew_name')  # 클라이언트로부터 crew의 이름 가져옴
 
-    post_id = request.GET.get('id')
+    post_id = request.GET.get('post_id')
 
     try:
         post = Post.objects.get(id=post_id)
@@ -83,7 +83,7 @@ def like_post(request):
 def post_content(request):
     # post-man 테스트 완료
 
-    post_id = request.GET.get('id')  # GET이니 쿼리 파라미터로 받기
+    post_id = request.GET.get('post_id')  # GET이니 쿼리 파라미터로 받기
 
     try:
         post = Post.objects.get(id = post_id)
@@ -99,7 +99,7 @@ def post_content(request):
 @permission_classes([permissions.AllowAny])  # 로그인 제약 없음
 def click_apply_button(request):
     user = request.user
-    post_id = request.GET.get('id')  # GET이니 쿼리 파라미터로 받기
+    post_id = request.GET.get('post_id')  # GET이니 쿼리 파라미터로 받기
 
     try:
         post = Post.objects.get(id = post_id)
