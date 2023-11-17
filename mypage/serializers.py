@@ -32,7 +32,7 @@ class GetAppliedListSerializer(serializers.ModelSerializer):
 
         try:
             apply = Apply.objects.get(user=user, post = obj)
-        except:
+        except ObjectDoesNotExist:
             return 0
 
         if now < obj.apply_end_date:
@@ -43,6 +43,8 @@ class GetAppliedListSerializer(serializers.ModelSerializer):
             return "1차 결과 확인"
         elif obj.final_result_date <= now and apply.document_pass == True:  # 2차 발표 시간 이후이면서 1차 합격한 사람의 경우
             return "2차 결과 확인" 
+        else:
+            return "모집 종료"
         
     def get_category_name(self, obj):
         crew = obj.crew
@@ -69,7 +71,8 @@ class GetLikedPostSerializer(serializers.ModelSerializer):
         crew = obj.crew
         category = crew.category
         return category.category_name
-    
+
+
 # 5번 api 관련 시리얼라이저    
 class GetCrewsPostsSerializer(serializers.ModelSerializer):
     crew_name = serializers.SerializerMethodField()

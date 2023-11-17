@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django.utils import timezone  # now = timezone.now() 이렇게 사용하기
 
-# 1. User의 기본 정보 반환해주는 GET API
+# 1. 일반 User의 기본 정보 반환해주는 GET API
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def get_normal_user_info(request):   # post-man 테스트 완료
@@ -29,7 +29,7 @@ def get_operator_user_info(request):
     user = request.user
 
     if user.is_operator == False:
-        return Response({"error":"He not is operator! just normal User!"}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"error":"He is not operator! just normal User!"}, status=status.HTTP_404_NOT_FOUND)
 
     try:
         administrator = Administrator.objects.get(user=user)
