@@ -16,7 +16,7 @@ def get_normal_user_info(request):   # post-man 테스트 완료
     user = request.user
 
     if user.is_operator == True:
-        return Response({"error":"He is operator! not normal User!"}, status=status.HTTP_404_NOT_FOUND)  
+        return Response({"error":"He is operator! not normal User!"}, status=status.HTTP_403_FORBIDDEN)  
 
     serializer = GetNormalUserInfoSerializer(user)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -91,7 +91,7 @@ def get_crews_posts(request):
     user = request.user
     
     if user.is_operator != True:
-        return Response({"error": "This User is not Crew's operator"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"error": "This User is not Crew's operator"}, status=status.HTTP_403_FORBIDDEN)
 
     try:
         administrator = Administrator.objects.get(user = user)
@@ -111,6 +111,10 @@ def get_crews_posts(request):
 
 
 # 6번 프로필 정보 수정하는 PATCH API (사진, 1전공, 2전공, 3전공)
+@api_view(['PATCH'])
+@permission_classes([permissions.IsAuthenticated])
+def change_user_info(request):
+    user = request.user
 
 
 
