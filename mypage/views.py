@@ -79,7 +79,7 @@ def get_liked_post(request):
     # 리스트 내에 Like 객체마다 연결된 Post 인스턴스 가져오기
     post_list = [like.post for like in liked_list]
 
-    serializer = GetLikedPostSerializer(post_list, many = True)
+    serializer = GetLikedPostSerializer(post_list, many = True, context={'user':user})
 
     return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -108,6 +108,12 @@ def get_crews_posts(request):
     serializer = GetCrewsPostsSerializer(post_List, many=True, context={'user':user})
 
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# 6번 프로필 정보 수정하는 PATCH API (사진, 1전공, 2전공, 3전공)
+
+
+
 
 
 
