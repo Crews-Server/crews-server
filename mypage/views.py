@@ -110,10 +110,80 @@ def get_crews_posts(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# 6번 프로필 정보 수정하는 PATCH API (사진, 1전공, 2전공, 3전공)
+# 6번 위의 1~5번까지 쪼개놓은 API 전부 하나로 합친 All-in-one 
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_all_mypage_info(request):
+    user = request.user
+
+    context = {}
+
+    # 만약 이 사람이 동아리 관리자 계정이라면
+    if user.is_operator == True:
+        
+        try:
+            administrator = Administrator.objects.get(user=user)
+        except Administrator.DoesNotExist:  # 관리자 계정이지만 연결된 동아리는 없는 경우
+            return Response({"error":"He is operator but there is no linked Crew!"}, status=status.HTTP_404_NOT_FOUND) 
+
+        
+        # 동아리의 기본 정보 담기
+        crew_info = {
+            "crew_name" : administrator.crew.crew_name,
+            "crew_description" : administrator.crew.description,
+            "crew's_category" : administrator.crew.category.category_name,
+            # 'crew_photo' : administrator.crew.photo,
+        }
+
+        # 해당 동아리의 Post 정보 가져오기!
+        crew = administrator.crew
+        post_List = Post.objects.filter(crew = crew)
+
+        if not post_List.exists(): #posts 리스트가 비어있을 때 -> 아직 공고를 올리지 않았음을 알려줘야!
+            return Response({"message": "No posts found for this crew"}, status=status.HTTP_200_OK)
+        
+        post_list_info = GetCrewsPostsSerializer(post_List, many=True, context={'user':user})
+
+        context["crew_info"] = crew_info
+        context["post_list_info"] = post_list_info.data
+
+        return Response(context, status=status.HTTP_200_OK)
+
+
+    # 만약 이 사람이 일반 유저라면
+    else:
+        
+        # 유저의 기본 정보 가져오기
+        user_nomal_info = GetNormalUserInfoSerializer(user)
+        context["user_nomal_info"] = user_nomal_info.data # 위에서 정리한 정보 context에 담기!
+
+        # 유저가 지원한 Post 리스트 가져오기
+        apply = Apply.objects.filter(user=user)
+        posts = [x.post for x in apply]  # apply에 연결되어있는 Post 객체들 다 담기!
+
+        applied_list = GetAppliedListSerializer(posts, many=True, context={'user':user})
+        context["applied_list"] = applied_list.data # 위에서 정리한 정보 context에 담기!
+
+        # 유저가 찜한 Post 리스트 가져오기!
+        liked = Like.objects.filter(user = user)
+        post_list = [like.post for like in liked]
+
+        liked_list = GetLikedPostSerializer(post_list, many = True, context={'user':user})
+        context["liked_list"] = liked_list.data
+
+        return Response(context, status=status.HTTP_200_OK)
+
+
+
+
+
+
+# 7번 프로필 정보 수정하는 PATCH API (사진, 1전공, 2전공, 3전공)
 @api_view(['PATCH'])
 @permission_classes([permissions.IsAuthenticated])
 def change_user_info(request):
+
+
     user = request.user
 
 
