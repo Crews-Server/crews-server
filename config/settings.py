@@ -89,6 +89,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True # <- 모든 호스트 허용 (배포 전에 우선 이렇게 ㄱㄱ)
+
+
+
 ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
