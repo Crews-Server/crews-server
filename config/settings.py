@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     # library
     "rest_framework",
     'corsheaders',
+    'storages',
     # apps
     "table",
     "accounts",
@@ -164,3 +165,24 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "table.User"  # User 재정의 setting 추가
+
+
+
+# S3 관련 세팅
+AWS_ACCESS_KEY_ID = get_env("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = get_env("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = 'sogangcrews'
+AWS_S3_REGION_NAME = 'ap-northeast-2' 
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+# AWS_DEFAULT_ACL = 'public-read'
+# AWS_QUERYSTRING_AUTH = False
+
+# Static Setting
+# STATIC_LOCATION = 'static'
+# STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Media Setting
+MEDIA_URL = "https://%s/media/" % AWS_S3_CUSTOM_DOMAIN
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
