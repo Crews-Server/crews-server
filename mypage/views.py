@@ -147,6 +147,8 @@ def get_all_mypage_info(request):
         context["crew_info"] = crew_info
         context["post_list_info"] = post_list_info.data
 
+        context["is_operator"] = True
+
         return Response(context, status=status.HTTP_200_OK)
 
 
@@ -171,11 +173,9 @@ def get_all_mypage_info(request):
         liked_list = GetLikedPostSerializer(post_list, many = True, context={'user':user})
         context["liked_list"] = liked_list.data
 
+        context["is_operator"] = False
+
         return Response(context, status=status.HTTP_200_OK)
-
-
-
-
 
 
 # 7번 프로필 정보 수정하는 PATCH API (사진, 1전공, 2전공, 3전공)
@@ -183,8 +183,19 @@ def get_all_mypage_info(request):
 @permission_classes([permissions.IsAuthenticated])
 def change_user_info(request):
 
-
     user = request.user
+
+    # 관리자인 경우 (사진, 동아리 소개 한 문장 수정 가능)
+    if user.is_operator == True: 
+        pass
+
+
+    # 일반 유저인 경우 (사진, 1전공, 2전공, 3전공)  
+    else:
+        pass
+
+
+
 
 
 
