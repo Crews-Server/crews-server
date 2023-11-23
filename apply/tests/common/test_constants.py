@@ -101,3 +101,26 @@ CHECKBOX_FILE_CREATE_REQUEST = {
         }
     ]
 }
+
+'''
+지원서 작성 요청
+- 모든 요청(모든 문항 종목에 대해)은 문항 Fk, 답안 내용을 포함한다.
+'''
+APPLY_REQUEST = {
+    "post_id": 1,
+    "answers":
+    [
+        {
+            "type": "long_sentence",
+            "content": "안녕하세요. 저는 정말 똑똑합니다. 뽑아주세요."
+        },
+        {
+            "type": "checkbox",
+            "content": "Java"
+        },
+        {
+            "type": "file",
+            "content": "none" # 구현 안 됨
+        }
+    ]
+}

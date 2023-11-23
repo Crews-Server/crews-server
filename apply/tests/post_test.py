@@ -3,7 +3,7 @@ from rest_framework.test import APIRequestFactory, APIClient
 from django.shortcuts import get_object_or_404
 from table.models import Crew, Post
 from ..permissions import IsAdministrator
-from .test_constants import POST_REQUEST, BAD_POST_REQUEST, ON_GOING_POST_REQUEST
+from .common.test_constants import POST_REQUEST, BAD_POST_REQUEST, ON_GOING_POST_REQUEST
 
 from django.contrib.auth import get_user_model
 User = get_user_model()

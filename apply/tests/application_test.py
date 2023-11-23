@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.test import APIClient
 from table.models import Crew, Post, Section, LongSentence, CheckBox, CheckBoxOption, File, User, Administrator
-from .test_constants import LONG_SENTENCE_CREATE_REQUEST, CHECKBOX_FILE_CREATE_REQUEST
+from .common.test_constants import LONG_SENTENCE_CREATE_REQUEST, CHECKBOX_FILE_CREATE_REQUEST
 
 
 # 지원서를 생성한다
