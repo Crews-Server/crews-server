@@ -17,8 +17,11 @@ SECRETS_PATH = os.path.join(BASE_DIR, "secrets.json")
 # secrets.json 파일
 secret_file = os.path.join(BASE_DIR, "secrets.json")
 
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
+try:
+    with open(secret_file) as f:
+        secrets = json.loads(f.read())
+except Exception as e:
+    pass        
 
 # secrets안 쓰고 이걸로!
 def get_env_variable(var_name):
