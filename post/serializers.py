@@ -30,7 +30,11 @@ class PostContent_PostSerializer(serializers.ModelSerializer):
 
         if user and not user.is_anonymous:
             # user가 로그인한 상태이면 '좋아요' 상태를 확인
-            return Like.objects.filter(post=obj, user=user).exists()
+            try:
+                like = Like.objects.get(post=obj, user=user)
+                return True
+            except:
+                return False
         else:
             # 로그인하지 않은 사용자는 항상 False 반환
             return False
