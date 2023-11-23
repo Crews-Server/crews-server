@@ -34,7 +34,7 @@ def get_crew_info(request):
         "crew_name" : crew.crew_name,
         "post_title" : post.title,
         "crew_description" : crew.description,
-        # "crew_photo" : crew.photo, 
+        "crew_photo" : crew.photo, 
         "category" : crew.category.category_name if crew.category else None, # 카테고리가 없으면 None으로 보내도록 분기 처리
     }
 
@@ -90,7 +90,7 @@ def post_content(request):
     except Post.DoesNotExist:
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
     
-    serializer = PostContent_PostSerializer(post)
+    serializer = PostContent_PostSerializer(post, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
