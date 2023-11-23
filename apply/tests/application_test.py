@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.test import APIClient
 from table.models import Crew, Post, Section, LongSentence, CheckBox, CheckBoxOption, File, User, Administrator
 from .common.test_constants import LONG_SENTENCE_CREATE_REQUEST, CHECKBOX_FILE_CREATE_REQUEST
-from common.generator import create_post, create_section, create_long_question, create_checkbox_question, create_option, create_file_question
+from .common.generator import create_post, create_section, create_long_question, create_checkbox_question, create_option, create_file_question, create_user
 
 # 지원서를 생성한다
 class ApplicationCreateTest(TestCase):
@@ -22,7 +22,7 @@ class ApplicationCreateTest(TestCase):
                             membership_fee="0",
                             crew=self.crew,
                             progress="0")
-        self.user = User.objects.create_user(email="test@naver.com", name="test user", password="1234")
+        self.user = create_user(email="test@naver.com", name="test user", password="1234", sogang_mail="test", student_number="test", first_major="test")
         self.user.is_operator = True
         self.administrator = Administrator.objects.create(user=self.user, crew=self.crew)
 

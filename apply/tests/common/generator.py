@@ -1,4 +1,12 @@
-from table.models import Post, Section, LongSentence, CheckBox, CheckBoxOption, File
+from table.models import Post, Section, LongSentence, CheckBox, CheckBoxOption, File, User
+
+def create_user(email, name, password, sogang_mail, student_number, first_major):
+    return User.objects.create_user(email=email,
+                                    name=name,
+                                    password=password,
+                                    sogang_mail=sogang_mail,
+                                    student_number=student_number,
+                                    first_major=first_major)
 
 def create_post(crew):
     return Post.objects.create(id=1,
