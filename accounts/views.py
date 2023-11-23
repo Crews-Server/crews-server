@@ -34,11 +34,13 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 import smtplib
 from email.mime.text import MIMEText
 # from config.settings import get_env
+from config.settings import get_env_variable
+
 
 # send_email = get_env("SEND_EMAIL")
 # send_pwd = get_env("SEND_PWD")
-send_email = os.getenv("SEND_EMAIL")
-send_pwd = os.getenv("SEND_PWD")
+send_email = get_env_variable("SEND_EMAIL")
+send_pwd = get_env_variable("SEND_PWD")
 smtp_name = "smtp.gmail.com"
 smtp_port = 587
 

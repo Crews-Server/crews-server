@@ -14,6 +14,7 @@ packaging==23.2
 PyJWT==2.8.0
 PyMySQL==1.1.0
 python-dateutil==2.8.2
+python-dotenv==1.0.0
 pytz==2023.3.post1
 redis==5.0.1
 s3transfer==0.7.0
