@@ -8,32 +8,36 @@ from datetime import timedelta
 # Base Directory 경로
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# secrets.json 경로
-SECRETS_PATH = os.path.join(BASE_DIR, "secrets.json")
 
-# secrets.json 파일
-secret_file = os.path.join(BASE_DIR, "secrets.json")
+# # secrets.json 경로
+# SECRETS_PATH = os.path.join(BASE_DIR, "secrets.json")
 
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
+# # secrets.json 파일
+# secret_file = os.path.join(BASE_DIR, "secrets.json")
 
-
-# 환경변수 가져오기
-def get_env(setting, secrets=secrets):
-    try:
-        return secrets[setting]
-    except KeyError:
-        error_msg = "Set the {} environment variable".format(setting)
-        raise ImproperlyConfigured(error_msg)
+# with open(secret_file) as f:
+#     secrets = json.loads(f.read())
 
 
-SECRET_KEY = get_env("SECRET_KEY")
+# # 환경변수 가져오기
+# def get_env(setting, secrets=secrets):
+#     try:
+#         return secrets[setting]
+#     except KeyError:
+#         error_msg = "Set the {} environment variable".format(setting)
+#         raise ImproperlyConfigured(error_msg)
+
+
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Debug 모드 설정
 DEBUG = True
 
 # Host 설정
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+
+CORS_ORIGIN_ALLOW_ALL = True # <- 모든 호스트 허용 (배포 전에 우선 이렇게 ㄱㄱ)
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Application definition
@@ -80,7 +84,7 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', 
+    'corsheaders.middleware.CorsMiddleware',  ## 이거 추가!! 위치 중요!!!
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -88,9 +92,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware', ## 이거 추가!!
 ]
 
-CORS_ORIGIN_ALLOW_ALL = True # <- 모든 호스트 허용 (배포 전에 우선 이렇게 ㄱㄱ)
 
 
 ROOT_URLCONF = "config.urls"
@@ -127,10 +131,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # engine: mysql
-        'NAME' : get_env("NAME"),  # DB Name
-        'USER' : get_env("USER"),  # DB User
-        'PASSWORD' : get_env("PASSWORD"),  # Password
-        'HOST': get_env("HOST"), # 생성한 데이터베이스 엔드포인트
+        'NAME' : os.getenv("NAME"),  # DB Name
+        'USER' : os.getenv("USER"),  # DB User
+        'PASSWORD' : os.getenv("PASSWORD"),  # Password
+        'HOST': os.getenv("HOST"), # 생성한 데이터베이스 엔드포인트
         'PORT': 3306, # 데이터베이스 포트
         'OPTIONS':{
             'init_command' : "SET sql_mode='STRICT_TRANS_TABLES'"
@@ -183,8 +187,8 @@ AUTH_USER_MODEL = "table.User"  # User 재정의 setting 추가
 
 
 # S3 관련 세팅
-AWS_ACCESS_KEY_ID = get_env("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = get_env("AWS_SECRET_ACCESS_KEY")
+AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = 'sogangcrews'
 AWS_S3_REGION_NAME = 'ap-northeast-2' 
 AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
