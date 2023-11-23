@@ -85,9 +85,8 @@ class ApplicationReadTest(TestCase):
         self.section2_q2_o1 = create_option("예", self.section3_q2)
         self.section2_q2_o1 = create_option("아니오", self.section3_q2)
         self.section3_q3 = create_long_question("타 협업에서 소통 경험을 써주세요.", 3, self.section3)
-
-        self.user = User.objects.create_user(email="test@naver.com", name="test user", password="1234")
-
+        self.user = create_user(email="test@naver.com", name="test user", password="1234", sogang_mail="test", student_number="test", first_major="test")
+        
     # 지원서를 섹션별로 조회한다
     def application_get_test(self):
         # given
