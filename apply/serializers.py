@@ -12,19 +12,34 @@ class SectionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class LongSentenceSerializer(serializers.ModelSerializer):
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, obj):
+        return "long_sentence"
+    
     class Meta:
         model = LongSentence
-        fields = '__all__'
+        fields = ('question', 'letter_count_limit', 'is_essential', 'sequence', 'section', 'type')
 
 class CheckBoxSerializer(serializers.ModelSerializer):
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, obj):
+        return "checkbox"
+    
     class Meta:
         model = CheckBox
-        fields = '__all__'
+        fields = ('question', 'is_essential', 'answer_minumum', 'answer_maximum', 'sequence', 'section', 'type')
 
 class FileSerializer(serializers.ModelSerializer):
+    type = serializers.SerializerMethodField()
+
+    def get_type(self, obj):
+        return "file"
+    
     class Meta:
         model = File
-        fields = '__all__'
+        fields = ('question', 'is_essential', 'sequence', 'section', 'type')
 
 class CheckBoxOptionSerializer(serializers.ModelSerializer):
     class Meta:

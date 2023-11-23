@@ -38,9 +38,26 @@ BAD_POST_REQUEST = {"apply_start_date": "2023-09-20 00:00:00",
 
 
 '''
+상시 모집 공고 생성 요청
+- apply_end_date와 document_result_date가 항상 '9999-12-31 23:59:59.999999'이다.
+'''
+ON_GOING_POST_REQUEST = {"apply_start_date": "2023-09-20 00:00:00",
+                         "apply_end_date": "9999-12-31 23:59:59.999999",
+                         "document_result_date": "9999-12-31 23:59:59.999999",
+                         "has_interview": "false",
+                         "requirement_target": "열정 있는 미래 창업인들",
+                         "title": "서강대학교 멋쟁이사자처럼 12기에서 신입 부원을 모집합니다!",
+                         "content": "마구마구지원부탁요",
+                         "membership_fee": "1년 활동 기간 동안 동아리에서 사용할 6만원",
+                         "crew": 1,
+                         "progress": "1차 서류만 진행합니다."}
+
+
+'''
 지원서 중 장문형 문항 생성 요청
 '''
 LONG_SENTENCE_CREATE_REQUEST = {
+    "post_id": 1,
     "section_name": "공통",
     "description": "모든 사람이 답변해야 하는 공통 문항입니다.",
     "question":
@@ -64,6 +81,7 @@ LONG_SENTENCE_CREATE_REQUEST = {
 지원서 중 객관식 & 파일 문항 생성 요청
 '''
 CHECKBOX_FILE_CREATE_REQUEST = {
+    "post_id": 1,
     "section_name": "공통",
     "description": "모든 사람이 답변해야 하는 공통 문항입니다.",
     "question":
@@ -80,6 +98,32 @@ CHECKBOX_FILE_CREATE_REQUEST = {
             "type": "file",
             "is_essential": True,
             "question": "포트폴리오 파일을 첨부해주세요."
+        }
+    ]
+}
+
+'''
+지원서 작성 요청
+- 모든 요청(모든 문항 종목에 대해)은 문항 Fk, 답안 내용을 포함한다.
+'''
+APPLY_REQUEST = {
+    "post_id": 1,
+    "answers":
+    [
+        {
+            "type": "long_sentence",
+            "question_id": 1,
+            "content": "안녕하세요. 저는 정말 똑똑합니다. 뽑아주세요."
+        },
+        {
+            "type": "checkbox",
+            "question_id": 1,
+            "content": "Java"
+        },
+        {
+            "type": "file",
+            "question_id": 1,
+            "content": "none" # 구현 안 됨
         }
     ]
 }
