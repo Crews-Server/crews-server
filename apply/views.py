@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer
 from .permissions import IsAdministrator
 
-from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption
+from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption, Apply, LongSentenceAnswer, CheckBoxAnswer, FileAnswer
 
 
 # 모집 공고를 생성하는 api
@@ -141,3 +141,58 @@ def add_checkbox(checkbox_list, section_questions):
         section_questions.append(checkbox)
         index += 1
     return section_questions
+
+
+# 지원서를 작성하는 api
+class ApplyCreate(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            post = Post.objects.get(id=request.data["post_id"])
+        except Post.DoesNotExist:
+            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        apply = Apply.objects.create(user=request.user, post=post)
+
+        for answer_dict in request.data["answers"]:
+            question_type = answer_dict["type"]
+            if(question_type == "long_sentence"):
+                create_long_sentence_answer(answer_dict, apply)
+            elif(question_type == "checkbox"):
+                create_checkbox_answer(answer_dict, apply)
+            elif(question_type == "file"):
+                create_file_anwer(answer_dict, apply)
+                
+        return Response({"message": "Application is successed"}, status=status.HTTP_201_CREATED)
+
+# 장문형 문항 답안 생성하기
+def create_long_sentence_answer(answer_dict, apply):
+    try:
+        question = LongSentence.objects.get(id=answer_dict["question_id"])
+    except LongSentence.DoesNotExist:
+        return Response({"error": "LongSetence(id: "
+                         + answer_dict["question_id"]
+                         + ") not found"}, status=status.HTTP_404_NOT_FOUND)
+    LongSentenceAnswer.objects.create(long_sentence=question, apply=apply, answer=answer_dict["content"])
+
+# 체크박스 문항 답안 생성하기
+def create_checkbox_answer(answer_dict, apply):
+    try:
+        question = CheckBox.objects.get(id=answer_dict["question_id"])
+    except CheckBox.DoesNotExist:
+        return Response({"error": "CheckBox(id: "
+                         + answer_dict["question_id"]
+                         + ") not found"}, status=status.HTTP_404_NOT_FOUND)
+    CheckBoxAnswer.objects.create(check_box=question, apply=apply, answer=answer_dict["content"])
+
+# 파일 문항 답안 생성하기
+def create_file_anwer(answer_dict, apply):
+    try:
+        question = File.objects.get(id=answer_dict["question_id"])
+    except File.DoesNotExist:
+        return Response({"error": "File(id: "
+                         + answer_dict["question_id"]
+                         + ") not found"}, status=status.HTTP_404_NOT_FOUND)
+    ## 파일 업로드 구현 안 됨
+    FileAnswer.objects.create(file=question, apply=apply)
