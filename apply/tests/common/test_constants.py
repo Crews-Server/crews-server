@@ -112,14 +112,17 @@ APPLY_REQUEST = {
     [
         {
             "type": "long_sentence",
+            "question_id": 1,
             "content": "안녕하세요. 저는 정말 똑똑합니다. 뽑아주세요."
         },
         {
             "type": "checkbox",
+            "question_id": 1,
             "content": "Java"
         },
         {
             "type": "file",
+            "question_id": 1,
             "content": "none" # 구현 안 됨
         }
     ]
