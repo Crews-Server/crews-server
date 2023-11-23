@@ -30,12 +30,12 @@ class UserRegisterView(generics.CreateAPIView):
 class CustomTokenObtainPairView(TokenObtainPairView):
     pass
 
+
 # 4. 서강대 이메일 중복체크 및 인증확인 메일 보내는 api
 import smtplib
 from email.mime.text import MIMEText
 # from config.settings import get_env
 from config.settings import get_env_variable
-
 
 # send_email = get_env("SEND_EMAIL")
 # send_pwd = get_env("SEND_PWD")
