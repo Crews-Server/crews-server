@@ -28,8 +28,7 @@ class UserRegisterView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    pass
-
+    serializer_class = CustomTokenObtainPairSerializer
 
 # 4. 서강대 이메일 중복체크 및 인증확인 메일 보내는 api
 import smtplib
