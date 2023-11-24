@@ -57,6 +57,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:8000",
     "https://port-0-crews-server-pulish-3szcb0g2blpb288gj.sel5.cloudtype.app",
+    "https://crews-client-git-dev-goonco.vercel.app/",
 ]
 
 
