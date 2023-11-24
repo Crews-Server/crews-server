@@ -30,13 +30,13 @@ def get_crew_info(request):
     
     crew = post.crew  # 해당 Post 객체에 연결되어있는 Crew 객체 반환
 
-    context = {
-        "crew_name" : crew.crew_name,
-        "post_title" : post.title,
-        "crew_description" : crew.description,
-        "crew_photo" : crew.photo, 
-        "category" : crew.category.category_name if crew.category else None, # 카테고리가 없으면 None으로 보내도록 분기 처리
-    }
+    context = {}
+    
+    post_serializers = ThisPostSerializers(post)
+    context["post"] = post_serializers.data
+
+    crew_serializers = ThisCrewSerializers(crew)
+    context['crew'] = crew_serializers.data
 
     return Response(context, status=status.HTTP_200_OK)
 

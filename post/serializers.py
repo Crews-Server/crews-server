@@ -3,6 +3,22 @@ from django.contrib.auth import get_user_model
 from table.models import *
 from django.core.exceptions import ObjectDoesNotExist
 
+class ThisCrewSerializers(serializers.ModelSerializer):
+    crew_category = serializers.SerializerMethodField()
+    class Meta:
+        model = Crew
+        fields = ['crew_name', 'description', 'crew_category']   
+    
+    def get_crew_category(self, obj):
+        return obj.category.category_name
+
+
+
+class ThisPostSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['title']
+
 class PostContent_PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
