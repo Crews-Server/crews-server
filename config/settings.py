@@ -49,7 +49,7 @@ DEBUG = True
 # Host 설정
 ALLOWED_HOSTS = ["*"]
 
-CORS_ORIGIN_ALLOW_ALL = True # <- 모든 호스트 허용 (배포 전에 우선 이렇게 ㄱㄱ)
+CORS_ORIGIN_ALLOW_ALL = True  # <- 모든 호스트 허용 (배포 전에 우선 이렇게 ㄱㄱ)
 CORS_ALLOW_CREDENTIALS = True
 
 # CSRF 신뢰할 수 있는 출처
@@ -57,6 +57,8 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:8000",
     "https://port-0-crews-server-pulish-3szcb0g2blpb288gj.sel5.cloudtype.app",
+    "https://crews-client-git-dev-goonco.vercel.app/",
+    "https://crews-client-git-dev-goonco.vercel.app",
 ]
 
 
