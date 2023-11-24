@@ -29,7 +29,29 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # 사용자 정보 추가
+        token['name'] = user.name
+        token['student_number'] = user.student_number
+        token['is_operator'] = user.is_operator
+        
+        return token
+
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        
+        # validate 메소드가 반환하는 데이터에 사용자 정보 추가
+        data.update({'name': self.user.name})
+        data.update({'student_number': self.user.student_number})
+        data.update({'is_operator': self.user.is_operator})
+
+        return data
 
 
 
