@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .exceptions.invalid_apply_exception import InvalidApplyException
+from .exceptions import InvalidApplyException
 from .permissions import IsAdministrator
 from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer, ApplySerializer, LongSentenceAnswerSerializer, CheckBoxAnswerSerializer, FileAnswerSerializer
 from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption
