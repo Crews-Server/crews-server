@@ -1,6 +1,6 @@
-from django.urls import path, include
+from django.urls import path
 from .views import *
-from rest_framework_simplejwt.views import TokenRefreshView  # 여기에 혹시 노란 밑줄 떠도 걱정 ㄴㄴ -> 잘 작동 됨.
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
     path('register/', UserRegisterView.as_view(), name='user-register'),
