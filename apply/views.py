@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from .exceptions.invalid_apply_exception import InvalidApplyException
 from .permissions import IsAdministrator
 from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer, ApplySerializer, LongSentenceAnswerSerializer, CheckBoxAnswerSerializer, FileAnswerSerializer
 from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption
@@ -148,6 +149,8 @@ class ApplyCreate(APIView):
                 Serializer = CheckBoxAnswerSerializer
             elif "file" in answer_dict:
                 Serializer = FileAnswerSerializer
+            else:
+                raise InvalidApplyException()
             answer_dict["apply"] = apply.id
             serializer = Serializer(data=answer_dict)
             if serializer.is_valid(raise_exception=True):
