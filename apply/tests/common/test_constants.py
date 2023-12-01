@@ -132,3 +132,18 @@ APPLY_REQUEST = {
         }
     ]
 }
+
+'''
+잘못된 지원서 작성 요청
+- 문항 종류를 제대로 기재하지 않았다.
+'''
+INVALID_APPLY_REQUEST = {
+    "post_id": 1,
+    "answers":
+    [
+        {
+            "question": 1,
+            "answer": "안녕하세요. 저는 정말 똑똑합니다. 뽑아주세요."
+        }
+    ]
+}
