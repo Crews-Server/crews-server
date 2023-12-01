@@ -1,4 +1,5 @@
 from django.urls import path, include
+
 from .views import PostCreate, application_create, Appication, ApplyCreate
 
 urlpatterns = [

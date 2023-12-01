@@ -7,7 +7,6 @@ from django.contrib.auth.models import (
 )
 
 
-# 유저를 생성하는 매니저 클래스
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -70,7 +69,6 @@ class UserManager(BaseUserManager):
         return user
 
 
-# 재정의한 User
 class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
@@ -79,9 +77,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=30, unique=True
     )  # 사용자의 이름 validators=[validate_unique_nickname]
     sogang_mail = models.CharField(max_length=100, unique=True)  # 서강 이메일
-    student_number = models.CharField(max_length=100, unique=True)  # 학번 ex) 20201111
+    student_number = models.CharField(
+        max_length=100, unique=True)  # 학번 ex) 20201111
     first_major = models.CharField(max_length=50)  # 본전공
-    second_major = models.CharField(max_length=50, null=True, blank=True)  # 2전공
+    second_major = models.CharField(
+        max_length=50, null=True, blank=True)  # 2전공
     third_major = models.CharField(max_length=50, null=True, blank=True)  # 3전공
     is_operator = models.BooleanField(default=False)  # 기본값은 '학생 유저'
     photo = models.FileField(upload_to='images/', null=True, blank=True)   # 학생의 사진
@@ -96,45 +96,61 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.name} | {self.student_number} | {self.first_major}"
 
+    @classmethod
+    def get_name(cls):
+        return "유저"
 
-# 카테고리
+
 class Category(models.Model):
     category_name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.category_name
 
+    @classmethod
+    def get_name(cls):
+        return "카테고리"
 
-# 동아리
+
 class Crew(models.Model):
     crew_name = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
-    category = models.ForeignKey(Category, related_name="crew", on_delete=models.SET_NULL, null=True) 
+    category = models.ForeignKey(
+        Category, related_name="crew", on_delete=models.SET_NULL, null=True) 
     photo = models.FileField(upload_to='images/', null=True, blank=True)    # 동아리의 사진
 
     def __str__(self):
         return self.crew_name
 
+    @classmethod
+    def get_name(cls):
+        return "동아리"
 
-# 운영자 관계 모델
+
 class Administrator(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="administer", on_delete=models.CASCADE
     )
-    crew = models.ForeignKey(Crew, related_name="administer", on_delete=models.CASCADE)
+    crew = models.ForeignKey(
+        Crew, related_name="administer", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user}는 {self.crew}의 운영자"
 
+    @classmethod
+    def get_name(cls):
+        return "운영자 관계"
 
-# 모집공고
+
 class Post(models.Model):
     apply_start_date = models.DateTimeField()  # 서류 시작 날짜
     apply_end_date = models.DateTimeField()  # 서류 마감 날짜
     document_result_date = models.DateTimeField()  # 서류 발표 날짜
     has_interview = models.BooleanField(default=True)  # 면접 여부, 기본값 True
-    interview_start_date = models.DateTimeField(null=True, blank=True)  # 면접 시작 날짜
-    interview_end_date = models.DateTimeField(null=True, blank=True)  # 면접 종료 날짜
+    interview_start_date = models.DateTimeField(
+        null=True, blank=True)  # 면접 시작 날짜
+    interview_end_date = models.DateTimeField(
+        null=True, blank=True)  # 면접 종료 날짜
     final_result_date = models.DateTimeField(null=True, blank=True)  # 최종 발표 날짜
     requirement_target = models.TextField()  # 모집 대상 명시 텍스트
     title = models.CharField(max_length=200)  # 공고 제목
@@ -157,22 +173,30 @@ class Post(models.Model):
     def __str__(self):
         return self.title
 
+    @classmethod
+    def get_name(cls):
+        return "모집공고"
 
-# Post의 이미지
+
 class PostImage(models.Model):
+    post = models.ForeignKey(
+        Post, related_name="post_image", on_delete=models.CASCADE)
     post_image = models.FileField(upload_to='images/', null=True, blank=True) 
-    post = models.ForeignKey(Post, related_name="post_image", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.post} 의 사진 {self.id}"
 
+    @classmethod
+    def get_name(cls):
+        return "모집공고의 이미지"
 
-# 모집공고 지원
+
 class Apply(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, related_name="apply", on_delete=models.CASCADE
     )
-    post = models.ForeignKey(Post, related_name="apply", on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name="apply",
+                             on_delete=models.CASCADE)
     apply_at = models.DateTimeField(auto_now=True)
     document_pass = models.BooleanField(
         default=False, null=True, blank=True
@@ -182,14 +206,17 @@ class Apply(models.Model):
         default=False, null=True, blank=True
     )  # 최종합격 여부, 기본값 False
     score_avg = models.FloatField(default=0)
-    
+
     # 면접 날짜 장소 시간 담는 변수 하나 생성
 
     def __str__(self):
         return f"{self.user} 의 {self.post} 지원"
-    
-    
-# 평가 모델
+
+    @classmethod
+    def get_name(cls):
+        return "지원"
+
+
 class Evaluation(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="evaluation"
@@ -201,43 +228,58 @@ class Evaluation(models.Model):
     comment = models.TextField()
 
     def __str__(self):
-        return f"Evaluation by {self.user.name} for {self.apply}"    
+        return f"Evaluation by {self.user.name} for {self.apply}"
+
+    @classmethod
+    def get_name(cls):
+        return "평가"
 
 
-# 모집공고 찜하기
 class Like(models.Model):
-    user = models.ForeignKey(User, related_name="like", on_delete=models.CASCADE)
-    post = models.ForeignKey(Post, related_name="like", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="like",
+                             on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, related_name="like",
+                             on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user} 의 {self.post} 찜"
 
+    @classmethod
+    def get_name(cls):
+        return "모집공고의 찜"
 
-# 모집공고 섹션
+
 class Section(models.Model):
     section_name = models.CharField(max_length=50)  # 공통 , 백엔드, 프론트앤드, 기획/디자인
-    post = models.ForeignKey(Post, related_name="section", on_delete=models.CASCADE)
+    post = models.ForeignKey(
+        Post, related_name="section", on_delete=models.CASCADE)
     description = models.TextField()
 
     def __str__(self):
         return self.section_name
+    
+    @classmethod
+    def get_name(cls):
+        return "모집공고의 섹션"
 
 
-# 장문형
 class LongSentence(models.Model):
     question = models.CharField(max_length=300)  # ex) 지원자께서 지원하신 동기는 무엇인가요?
     letter_count_limit = models.IntegerField()  # 500자
-    is_essential = models.BooleanField(default=True) # 해당 타입이 필수적인지 아닌지 여부
-    sequence = models.IntegerField(default=0) # 문항 순서
+    is_essential = models.BooleanField(default=True)  # 해당 타입이 필수적인지 아닌지 여부
+    sequence = models.IntegerField(default=0)  # 문항 순서
     section = models.ForeignKey(
         Section, related_name="long_sentence", on_delete=models.CASCADE
     )
 
     def __str__(self):
         return f"long sentence : {self.question}"
+    
+    @classmethod
+    def get_name(cls):
+        return "장문형 문항"
 
 
-# 장문형 문항에 대한 답
 class LongSentenceAnswer(models.Model):
     long_sentence = models.ForeignKey(
         LongSentence, related_name="long_sentence_answer", on_delete=models.CASCADE
@@ -247,23 +289,29 @@ class LongSentenceAnswer(models.Model):
     )
     answer = models.TextField()
 
+    @classmethod
+    def get_name(cls):
+        return "장문형 문항 답안"
 
-# 체크박스
+
 class CheckBox(models.Model):
     question = models.CharField(max_length=300)
     is_essential = models.BooleanField(default=True)  # 해당 타입이 필수적인지 아닌지 여부
     answer_minumum = models.IntegerField(default=1)
     answer_maximum = models.IntegerField(default=1)
-    sequence = models.IntegerField(default=0) # 문항 순서
+    sequence = models.IntegerField(default=0)  # 문항 순서
     section = models.ForeignKey(
         Section, related_name="check_box", on_delete=models.CASCADE
     )
 
     def __str__(self):
         return f"check box : {self.question}"
+    
+    @classmethod
+    def get_name(cls):
+        return "체크박스 문항"
 
 
-# 체크박스의 선택지
 class CheckBoxOption(models.Model):
     option = models.CharField(max_length=200)
     check_box = models.ForeignKey(
@@ -273,8 +321,11 @@ class CheckBoxOption(models.Model):
     def __str__(self):
         return f"{self.check_box}에 대한 보기 {self.option}"
 
+    @classmethod
+    def get_name(cls):
+        return "체크박스 문항의 선택지"
+    
 
-# 체크박스에 대한 답
 class CheckBoxAnswer(models.Model):
     check_box = models.ForeignKey(
         CheckBox, related_name="check_box_answer", on_delete=models.CASCADE
@@ -284,36 +335,57 @@ class CheckBoxAnswer(models.Model):
     )
     answer = models.CharField(max_length=200)
 
+    @classmethod
+    def get_name(cls):
+        return "체크박스 문항 답안"
 
-# 파일
+
 class File(models.Model):
-    question = models.CharField(max_length=300) 
-    is_essential = models.BooleanField(default=True) # 해당 타입이 필수적인지 아닌지 여부
-    sequence = models.IntegerField(default=0) # 문항 순서
-    section = models.ForeignKey(Section, related_name="file", on_delete=models.CASCADE)
+    question = models.CharField(max_length=300)
+    is_essential = models.BooleanField(default=True)  # 해당 타입이 필수적인지 아닌지 여부
+    sequence = models.IntegerField(default=0)  # 문항 순서
+    section = models.ForeignKey(
+        Section, related_name="file", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"file : {self.question}"
 
+    @classmethod
+    def get_name(cls):
+        return "파일 문항"
 
-# 파일에 대한 답
+
 class FileAnswer(models.Model):
-    file = models.ForeignKey(File, related_name="file_answer", on_delete=models.CASCADE)
+    file = models.ForeignKey(
+        File, related_name="file_answer", on_delete=models.CASCADE)
     apply = models.ForeignKey(
         Apply, related_name="file_answer", on_delete=models.CASCADE
     )
     uploaded_file = models.FileField(upload_to='files/') 
 
+    @classmethod
+    def get_name(cls):
+        return "파일 문항 답안"
+
 
 class Comment(models.Model):
-    apply = models.ForeignKey(Apply, related_name="comment", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="comment", on_delete=models.CASCADE)
+    apply = models.ForeignKey(
+        Apply, related_name="comment", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, related_name="comment", on_delete=models.CASCADE)
+    
+    @classmethod
+    def get_name(cls):
+        return "코멘트"
 
 
 class Score(models.Model):
-    apply = models.ForeignKey(Apply, related_name="score", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="score", on_delete=models.CASCADE)
+    apply = models.ForeignKey(
+        Apply, related_name="score", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="score",
+                             on_delete=models.CASCADE)
     value = models.IntegerField(default=0)  # 디폴트 0으로 세팅
 
-
-
+    @classmethod
+    def get_name(cls):
+        return "점수"

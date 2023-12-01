@@ -1,8 +1,9 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from table.models import Crew, Post
-from .common.test_constants import APPLY_REQUEST
+
 from .common.generator import create_section, create_long_question, create_checkbox_question, create_file_question, create_user
+from .common.test_constants import APPLY_REQUEST, INVALID_APPLY_REQUEST
+from table.models import Crew, Post
 
 # 일반 유저가 지원서를 작성한다
 class ApplyCreateTest(TestCase):
@@ -28,7 +29,7 @@ class ApplyCreateTest(TestCase):
         self.section3_q1 = create_file_question("관련 포트폴리오를 제출해주세요", 1, self.section1)
 
     # 지원서를 작성하여 STATUS 201을 반환한다
-    def apply_test(self):
+    def test_apply(self):
         # given & when
         client = APIClient()
         client.force_authenticate(user=self.user)
@@ -38,3 +39,15 @@ class ApplyCreateTest(TestCase):
         
         # then
         self.assertEqual(response.status_code, 201)
+
+    # 잘못된 지원서 생성 요청으로 STATUS 400을 반환한다
+    def test_invalid_apply(self):
+        # given & when
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        response = client.post(self.url,
+                               data=INVALID_APPLY_REQUEST,
+                               format='json')
+        # then
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()["detail"], "잘못된 지원서 작성 요청입니다.")

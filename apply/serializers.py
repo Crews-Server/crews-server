@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from table.models import Post, Section, LongSentence, CheckBox, File, CheckBoxOption
+
+from table.models import Post, Section, LongSentence, CheckBox, File, CheckBoxOption, Apply, LongSentenceAnswer, CheckBoxAnswer, FileAnswer
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,4 +45,24 @@ class FileSerializer(serializers.ModelSerializer):
 class CheckBoxOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = CheckBoxOption
+        fields = '__all__'
+
+class ApplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Apply
+        fields = '__all__'
+
+class LongSentenceAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LongSentenceAnswer
+        fields = '__all__'
+
+class CheckBoxAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CheckBoxAnswer
+        fields = '__all__'
+
+class FileAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FileAnswer
         fields = '__all__'

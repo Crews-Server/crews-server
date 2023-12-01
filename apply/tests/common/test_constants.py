@@ -103,6 +103,14 @@ CHECKBOX_FILE_CREATE_REQUEST = {
 }
 
 '''
+잘못된 문항 생성 요청
+- 존재하지 않는 post id로 요청한다.
+'''
+INVALID_POST_ID_REQUEST = {
+    "post_id": 3
+}
+
+'''
 지원서 작성 요청
 - 모든 요청(모든 문항 종목에 대해)은 문항 Fk, 답안 내용을 포함한다.
 '''
@@ -111,19 +119,31 @@ APPLY_REQUEST = {
     "answers":
     [
         {
-            "type": "long_sentence",
-            "question_id": 1,
-            "content": "안녕하세요. 저는 정말 똑똑합니다. 뽑아주세요."
+            "long_sentence": 1,
+            "answer": "안녕하세요. 저는 정말 똑똑합니다. 뽑아주세요."
         },
         {
-            "type": "checkbox",
-            "question_id": 1,
-            "content": "Java"
+            "check_box": 1,
+            "answer": "Java"
         },
         {
-            "type": "file",
-            "question_id": 1,
-            "content": "none" # 구현 안 됨
+            "file": 1,
+            "answer": "none"  # 구현 안 됨
+        }
+    ]
+}
+
+'''
+잘못된 지원서 작성 요청
+- 문항 종류를 제대로 기재하지 않았다.
+'''
+INVALID_APPLY_REQUEST = {
+    "post_id": 1,
+    "answers":
+    [
+        {
+            "question": 1,
+            "answer": "안녕하세요. 저는 정말 똑똑합니다. 뽑아주세요."
         }
     ]
 }
