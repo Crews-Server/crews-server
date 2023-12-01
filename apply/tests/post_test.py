@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404
 from table.models import Crew, Post
 from ..permissions import IsAdministrator
 from .common.test_constants import POST_REQUEST, BAD_POST_REQUEST, ON_GOING_POST_REQUEST
+from .common.generator import create_user
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -16,8 +17,7 @@ class PostCreateTest(TestCase):
     def setUp(self):
         self.crew = Crew.objects.create(id=1, crew_name="멋쟁이사자처럼",
                                         description="전국 연합 IT 동아리, 멋쟁이사자처럼입니다!")
-        self.user = User.objects.create_user(
-            email="test@naver.com", name="test user", password="1234")
+        self.user = create_user(email="test@naver.com", name="test user", password="1234", sogang_mail="test", student_number="test", first_major="test")
         self.user.is_operator = True
 
 
