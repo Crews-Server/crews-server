@@ -9,5 +9,4 @@ urlpatterns = [
     path('home/', include('home.urls')),
     path('mypage/', include('mypage.urls')),
     path('post/', include('post.urls')),
-    path('table/', include('table.urls')),
 ]
