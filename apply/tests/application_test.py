@@ -28,7 +28,7 @@ class ApplicationCreateTest(TestCase):
         self.administrator = Administrator.objects.create(user=self.user, crew=self.crew)
 
     # 공통 섹션과 장문형 문항을 생성한다.
-    def long_sentence_question_test(self):
+    def test_long_sentence_question(self):
         # given & when
         client = APIClient()
         client.force_authenticate(user=self.user)
@@ -48,7 +48,7 @@ class ApplicationCreateTest(TestCase):
         self.assertEqual(saved_long_sentence2.letter_count_limit, LONG_SENTENCE_CREATE_REQUEST["question"][1]["letter_count_limit"])
 
     # 객관식 문항(checkbox)과 파일 문항을 생성한다.
-    def checkbox_file_question_test(self):
+    def test_checkbox_file_question(self):
         # given & when
         client = APIClient()
         client.force_authenticate(user=self.user)
@@ -103,7 +103,7 @@ class ApplicationReadTest(TestCase):
         self.user = create_user(email="test@naver.com", name="test user", password="1234", sogang_mail="test", student_number="test", first_major="test")
         
     # 지원서를 섹션별로 조회한다
-    def application_get_test(self):
+    def test_application_get(self):
         # given
         client = APIClient()
         client.force_authenticate(user=self.user)

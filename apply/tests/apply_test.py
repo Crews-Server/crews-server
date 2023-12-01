@@ -28,7 +28,7 @@ class ApplyCreateTest(TestCase):
         self.section3_q1 = create_file_question("관련 포트폴리오를 제출해주세요", 1, self.section1)
 
     # 지원서를 작성하여 STATUS 201을 반환한다
-    def apply_test(self):
+    def test_apply(self):
         # given & when
         client = APIClient()
         client.force_authenticate(user=self.user)
