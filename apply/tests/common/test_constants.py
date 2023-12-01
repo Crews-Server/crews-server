@@ -119,19 +119,16 @@ APPLY_REQUEST = {
     "answers":
     [
         {
-            "type": "long_sentence",
-            "question_id": 1,
-            "content": "안녕하세요. 저는 정말 똑똑합니다. 뽑아주세요."
+            "long_sentence": 1,
+            "answer": "안녕하세요. 저는 정말 똑똑합니다. 뽑아주세요."
         },
         {
-            "type": "checkbox",
-            "question_id": 1,
-            "content": "Java"
+            "check_box": 1,
+            "answer": "Java"
         },
         {
-            "type": "file",
-            "question_id": 1,
-            "content": "none"  # 구현 안 됨
+            "file": 1,
+            "answer": "none"  # 구현 안 됨
         }
     ]
 }

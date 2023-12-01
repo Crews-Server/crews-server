@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .permissions import IsAdministrator
-from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer
-from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption, Apply, LongSentenceAnswer, CheckBoxAnswer, FileAnswer
+from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer, ApplySerializer, LongSentenceAnswerSerializer, CheckBoxAnswerSerializer, FileAnswerSerializer
+from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption
 from utils.get_object import custom_get_object_or_404
 
 # 모집 공고를 생성하는 api
@@ -137,31 +137,20 @@ class ApplyCreate(APIView):
     def post(self, request, *args, **kwargs):
         post = custom_get_object_or_404(Post, pk=request.data["post_id"])
         
-        apply = Apply.objects.create(user=request.user, post=post)
+        apply_serializer = ApplySerializer(data={"user": request.user.id, "post": post.id})
+        if apply_serializer.is_valid(raise_exception=True):
+            apply = apply_serializer.save()
 
         for answer_dict in request.data["answers"]:
-            question_type = answer_dict["type"]
-            if(question_type == "long_sentence"):
-                create_long_sentence_answer(answer_dict, apply)
-            elif(question_type == "checkbox"):
-                create_checkbox_answer(answer_dict, apply)
-            elif(question_type == "file"):
-                create_file_anwer(answer_dict, apply)
+            if "long_sentence" in answer_dict:
+                Serializer = LongSentenceAnswerSerializer
+            elif "check_box" in answer_dict:
+                Serializer = CheckBoxAnswerSerializer
+            elif "file" in answer_dict:
+                Serializer = FileAnswerSerializer
+            answer_dict["apply"] = apply.id
+            serializer = Serializer(data=answer_dict)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
                 
         return Response({"message": "Application is successed"}, status=status.HTTP_201_CREATED)
-
-# 장문형 문항 답안 생성하기
-def create_long_sentence_answer(answer_dict, apply):
-    question = custom_get_object_or_404(LongSentence, pk=answer_dict["question_id"])
-    LongSentenceAnswer.objects.create(long_sentence=question, apply=apply, answer=answer_dict["content"])
-
-# 체크박스 문항 답안 생성하기
-def create_checkbox_answer(answer_dict, apply):
-    question = custom_get_object_or_404(CheckBox, pk=answer_dict["question_id"])
-    CheckBoxAnswer.objects.create(check_box=question, apply=apply, answer=answer_dict["content"])
-
-# 파일 문항 답안 생성하기
-def create_file_anwer(answer_dict, apply):
-    question = custom_get_object_or_404(File, pk=answer_dict["question_id"])
-    ## 파일 업로드 구현 안 됨
-    FileAnswer.objects.create(file=question, apply=apply)
