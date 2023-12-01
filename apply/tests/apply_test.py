@@ -1,8 +1,9 @@
 from django.test import TestCase
 from rest_framework.test import APIClient
-from table.models import Crew, Post
-from .common.test_constants import APPLY_REQUEST
+
 from .common.generator import create_section, create_long_question, create_checkbox_question, create_file_question, create_user
+from .common.test_constants import APPLY_REQUEST
+from table.models import Crew, Post
 
 # 일반 유저가 지원서를 작성한다
 class ApplyCreateTest(TestCase):

@@ -108,7 +108,7 @@ CHECKBOX_FILE_CREATE_REQUEST = {
 '''
 INVALID_POST_ID_REQUEST = {
     "post_id": 3
-} 
+}
 
 '''
 지원서 작성 요청
@@ -131,7 +131,7 @@ APPLY_REQUEST = {
         {
             "type": "file",
             "question_id": 1,
-            "content": "none" # 구현 안 됨
+            "content": "none"  # 구현 안 됨
         }
     ]
 }

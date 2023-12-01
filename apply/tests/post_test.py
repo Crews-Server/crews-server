@@ -1,10 +1,11 @@
+from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory, APIClient
-from django.shortcuts import get_object_or_404
-from table.models import Crew, Post
+
 from ..permissions import IsAdministrator
-from .common.test_constants import POST_REQUEST, BAD_POST_REQUEST, ON_GOING_POST_REQUEST
 from .common.generator import create_user
+from .common.test_constants import POST_REQUEST, BAD_POST_REQUEST, ON_GOING_POST_REQUEST
+from table.models import Crew, Post
 
 from django.contrib.auth import get_user_model
 User = get_user_model()
@@ -53,7 +54,7 @@ class PostCreateTest(TestCase):
         # then
         self.assertEqual(response.status_code, 400)
         print(response.json())
-        
+
 
     # 상시 모집 공고를 생성하여 STATUS 201을 반환한다
     def test_on_going_post_create(self):

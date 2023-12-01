@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from table.models import Post, Section, LongSentence, CheckBox, File, CheckBoxOption
 
 class PostSerializer(serializers.ModelSerializer):
