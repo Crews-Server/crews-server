@@ -1,14 +1,13 @@
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 
-from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer
 from .permissions import IsAdministrator
-
+from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer
 from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption, Apply, LongSentenceAnswer, CheckBoxAnswer, FileAnswer
-
+from utils.get_object import custom_get_object_or_404
 
 # 모집 공고를 생성하는 api
 class PostCreate(generics.CreateAPIView):
@@ -30,11 +29,7 @@ request body
 @api_view(['POST'])
 @permission_classes([IsAdministrator])
 def application_create(request):
-
-    try:
-        post = Post.objects.get(id=request.data["post_id"])
-    except Post.DoesNotExist:
-        return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+    post = custom_get_object_or_404(Post, pk=request.data["post_id"])
     
     administrator = Administrator.objects.get(user=request.user)
     if administrator.crew != post.crew:
@@ -94,16 +89,12 @@ class Appication(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, post_id, *args, **kwargs):
-        
-        try:
-            post = Post.objects.get(id=post_id)
-        except Post.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        post = custom_get_object_or_404(Post, pk=post_id)
         
         res = {}
 
         # 공통 section 문항 조회('section')
-        common_section = Section.objects.get(post_id=post.id, section_name="공통")
+        common_section = custom_get_object_or_404(Section, pk=post.id, section_name="공통")
 
         common_questions = LongSentenceSerializer(LongSentence.objects.filter(section=common_section), many=True).data
         common_questions = add_checkbox(CheckBox.objects.filter(section=common_section), common_questions)
@@ -116,11 +107,7 @@ class Appication(APIView):
 
         # section 별로 조회
         section_id = request.query_params.get('section-id')
-
-        try:
-            section = Section.objects.get(id=section_id)
-        except Section.DoesNotExist:
-            return Response({"error": "Section not found"}, status=status.HTTP_404_NOT_FOUND)
+        section = custom_get_object_or_404(Section, pk=section_id)
         
         section_questions = LongSentenceSerializer(LongSentence.objects.filter(section=section), many=True).data
         section_questions = add_checkbox(CheckBox.objects.filter(section=section), section_questions)
@@ -148,10 +135,7 @@ class ApplyCreate(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, *args, **kwargs):
-        try:
-            post = Post.objects.get(id=request.data["post_id"])
-        except Post.DoesNotExist:
-            return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+        post = custom_get_object_or_404(Post, pk=request.data["post_id"])
         
         apply = Apply.objects.create(user=request.user, post=post)
 
@@ -168,31 +152,16 @@ class ApplyCreate(APIView):
 
 # 장문형 문항 답안 생성하기
 def create_long_sentence_answer(answer_dict, apply):
-    try:
-        question = LongSentence.objects.get(id=answer_dict["question_id"])
-    except LongSentence.DoesNotExist:
-        return Response({"error": "LongSetence(id: "
-                         + answer_dict["question_id"]
-                         + ") not found"}, status=status.HTTP_404_NOT_FOUND)
+    question = custom_get_object_or_404(LongSentence, pk=answer_dict["question_id"])
     LongSentenceAnswer.objects.create(long_sentence=question, apply=apply, answer=answer_dict["content"])
 
 # 체크박스 문항 답안 생성하기
 def create_checkbox_answer(answer_dict, apply):
-    try:
-        question = CheckBox.objects.get(id=answer_dict["question_id"])
-    except CheckBox.DoesNotExist:
-        return Response({"error": "CheckBox(id: "
-                         + answer_dict["question_id"]
-                         + ") not found"}, status=status.HTTP_404_NOT_FOUND)
+    question = custom_get_object_or_404(CheckBox, pk=answer_dict["question_id"])
     CheckBoxAnswer.objects.create(check_box=question, apply=apply, answer=answer_dict["content"])
 
 # 파일 문항 답안 생성하기
 def create_file_anwer(answer_dict, apply):
-    try:
-        question = File.objects.get(id=answer_dict["question_id"])
-    except File.DoesNotExist:
-        return Response({"error": "File(id: "
-                         + answer_dict["question_id"]
-                         + ") not found"}, status=status.HTTP_404_NOT_FOUND)
+    question = custom_get_object_or_404(File, pk=answer_dict["question_id"])
     ## 파일 업로드 구현 안 됨
     FileAnswer.objects.create(file=question, apply=apply)
