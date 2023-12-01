@@ -103,6 +103,14 @@ CHECKBOX_FILE_CREATE_REQUEST = {
 }
 
 '''
+잘못된 문항 생성 요청
+- 존재하지 않는 post id로 요청한다.
+'''
+INVALID_POST_ID_REQUEST = {
+    "post_id": 3
+} 
+
+'''
 지원서 작성 요청
 - 모든 요청(모든 문항 종목에 대해)은 문항 Fk, 답안 내용을 포함한다.
 '''

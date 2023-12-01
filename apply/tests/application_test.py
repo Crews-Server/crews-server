@@ -1,9 +1,10 @@
-from django.test import TestCase
 from django.shortcuts import get_object_or_404, get_list_or_404
+from django.test import TestCase
 from rest_framework.test import APIClient
-from table.models import Crew, Post, Section, LongSentence, CheckBox, CheckBoxOption, File, User, Administrator
-from .common.test_constants import LONG_SENTENCE_CREATE_REQUEST, CHECKBOX_FILE_CREATE_REQUEST
+
 from .common.generator import create_post, create_section, create_long_question, create_checkbox_question, create_option, create_file_question, create_user
+from .common.test_constants import LONG_SENTENCE_CREATE_REQUEST, CHECKBOX_FILE_CREATE_REQUEST, INVALID_POST_ID_REQUEST
+from table.models import Crew, Post, Section, LongSentence, CheckBox, CheckBoxOption, File, Administrator
 
 # 지원서를 생성한다
 class ApplicationCreateTest(TestCase):
@@ -63,6 +64,20 @@ class ApplicationCreateTest(TestCase):
         self.assertEqual(saved_checkbox.answer_minumum, CHECKBOX_FILE_CREATE_REQUEST["question"][0]["answer_minumum"])
         self.assertEqual(saved_options[0].option, CHECKBOX_FILE_CREATE_REQUEST["question"][0]["options"][0])
         self.assertEqual(saved_file_question.is_essential, CHECKBOX_FILE_CREATE_REQUEST["question"][1]["is_essential"])
+
+    # 잘못된 문항 생성 요청으로 STATUS 404를 반환한다.
+    def test_invalid_post_request(self):
+        # given & when
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+        response = client.post(self.url,
+                               data=INVALID_POST_ID_REQUEST,
+                               format='json')
+
+        # then
+        self.assertEqual(response.status_code, 404)
+        print(response.json())
+
 
 # 지원서를 조회한다
 class ApplicationReadTest(TestCase):
