@@ -21,7 +21,7 @@ def get_crew_info(request):
     # post_title = request.GET.get('post_title')  # 클라이언트로부터 공고(Post)의 title을 전달 받음 (url 쿼리 파라미터로 넘김)
     # crew_name = request.GET.get('crew_name')  # 클라이언트로부터 crew의 이름 가져옴
 
-    post_id = request.GET.get('id')
+    post_id = request.GET.get('post_id')
 
     try:
         post = Post.objects.get(id=post_id)
@@ -30,13 +30,13 @@ def get_crew_info(request):
     
     crew = post.crew  # 해당 Post 객체에 연결되어있는 Crew 객체 반환
 
-    context = {
-        "crew_name" : crew.crew_name,
-        "post_title" : post.title,
-        "crew_description" : crew.description,
-        # "crew_photo" : crew.photo, 
-        "category" : crew.category.category_name if crew.category else None, # 카테고리가 없으면 None으로 보내도록 분기 처리
-    }
+    context = {}
+    
+    post_serializers = ThisPostSerializers(post)
+    context["post"] = post_serializers.data
+
+    crew_serializers = ThisCrewSerializers(crew)
+    context['crew'] = crew_serializers.data
 
     return Response(context, status=status.HTTP_200_OK)
 
@@ -83,14 +83,14 @@ def like_post(request):
 def post_content(request):
     # post-man 테스트 완료
 
-    post_id = request.GET.get('id')  # GET이니 쿼리 파라미터로 받기
+    post_id = request.GET.get('post_id')  # GET이니 쿼리 파라미터로 받기
 
     try:
         post = Post.objects.get(id = post_id)
     except Post.DoesNotExist:
         return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
     
-    serializer = PostContent_PostSerializer(post)
+    serializer = PostContent_PostSerializer(post, context={'request': request})
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -99,7 +99,7 @@ def post_content(request):
 @permission_classes([permissions.AllowAny])  # 로그인 제약 없음
 def click_apply_button(request):
     user = request.user
-    post_id = request.GET.get('id')  # GET이니 쿼리 파라미터로 받기
+    post_id = request.GET.get('post_id')  # GET이니 쿼리 파라미터로 받기
 
     try:
         post = Post.objects.get(id = post_id)

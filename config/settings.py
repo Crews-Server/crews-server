@@ -4,6 +4,9 @@ from django.core.exceptions import ImproperlyConfigured
 
 from datetime import timedelta
 
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Base Directory 경로
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,26 +17,50 @@ SECRETS_PATH = os.path.join(BASE_DIR, "secrets.json")
 # secrets.json 파일
 secret_file = os.path.join(BASE_DIR, "secrets.json")
 
-with open(secret_file) as f:
-    secrets = json.loads(f.read())
+try:
+    with open(secret_file) as f:
+        secrets = json.loads(f.read())
+except Exception as e:
+    pass        
 
+# secrets안 쓰고 이걸로!
+def get_env_variable(var_name):
 
-# 환경변수 가져오기
-def get_env(setting, secrets=secrets):
     try:
-        return secrets[setting]
+        return os.environ[var_name]
     except KeyError:
-        error_msg = "Set the {} environment variable".format(setting)
+        error_msg = 'Set the {} environment variable'.format(var_name)
         raise ImproperlyConfigured(error_msg)
 
+# # 환경변수 가져오기
+# def get_env(setting, secrets=secrets):
+#     try:
+#         return secrets[setting]
+#     except KeyError:
+#         error_msg = "Set the {} environment variable".format(setting)
+#         raise ImproperlyConfigured(error_msg)
 
-SECRET_KEY = get_env("SECRET_KEY")
+
+SECRET_KEY = get_env_variable("SECRET_KEY")
 
 # Debug 모드 설정
 DEBUG = True
 
 # Host 설정
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+
+CORS_ORIGIN_ALLOW_ALL = True  # <- 모든 호스트 허용 (배포 전에 우선 이렇게 ㄱㄱ)
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF 신뢰할 수 있는 출처
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+    "https://port-0-crews-server-pulish-3szcb0g2blpb288gj.sel5.cloudtype.app",
+    "https://crews-client-git-dev-goonco.vercel.app/",
+    "https://crews-client-git-dev-goonco.vercel.app",
+]
+
 
 
 # Application definition
@@ -47,6 +74,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # library
     "rest_framework",
+    'corsheaders',
+    'storages',
     # apps
     "table",
     "accounts",
@@ -79,6 +108,7 @@ SIMPLE_JWT = {
 }
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  ## 이거 추가!! 위치 중요!!!
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -86,7 +116,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware', ## 이거 추가!!
 ]
+
+
 
 ROOT_URLCONF = "config.urls"
 
@@ -111,10 +144,25 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
+# aws RDS연결하기 위한 설정 변경
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', # engine: mysql
+        'NAME' : get_env_variable("NAME"),  # DB Name
+        'USER' : get_env_variable("USER"),  # DB User
+        'PASSWORD' : get_env_variable("PASSWORD"),  # Password
+        'HOST': get_env_variable("HOST"), # 생성한 데이터베이스 엔드포인트
+        'PORT': 3306, # 데이터베이스 포트
+        'OPTIONS':{
+            'init_command' : "SET sql_mode='STRICT_TRANS_TABLES'"
+        }
     }
 }
 
@@ -159,3 +207,22 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "table.User"  # User 재정의 setting 추가
+
+# S3 관련 세팅
+AWS_ACCESS_KEY_ID = get_env_variable("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = get_env_variable("AWS_SECRET_ACCESS_KEY")
+AWS_STORAGE_BUCKET_NAME = 'sogangcrews'
+AWS_S3_REGION_NAME = 'ap-northeast-2' 
+AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+# AWS_DEFAULT_ACL = 'public-read'
+# AWS_QUERYSTRING_AUTH = False
+
+# Static Setting
+# STATIC_LOCATION = 'static'
+# STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/'
+# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+# Media Setting
+MEDIA_URL = "https://%s/media/" % AWS_S3_CUSTOM_DOMAIN
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'

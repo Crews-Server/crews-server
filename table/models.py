@@ -84,7 +84,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         max_length=50, null=True, blank=True)  # 2전공
     third_major = models.CharField(max_length=50, null=True, blank=True)  # 3전공
     is_operator = models.BooleanField(default=False)  # 기본값은 '학생 유저'
-    # photo = models.ImageField()   # 학생의 사진
+    photo = models.FileField(upload_to='images/', null=True, blank=True)   # 학생의 사진
 
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
@@ -116,8 +116,8 @@ class Crew(models.Model):
     crew_name = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
     category = models.ForeignKey(
-        Category, related_name="crew", on_delete=models.SET_NULL, null=True)
-    # photo = models.ImageField()   # 동아리의 사진
+        Category, related_name="crew", on_delete=models.SET_NULL, null=True) 
+    photo = models.FileField(upload_to='images/', null=True, blank=True)    # 동아리의 사진
 
     def __str__(self):
         return self.crew_name
@@ -179,9 +179,9 @@ class Post(models.Model):
 
 
 class PostImage(models.Model):
-    # post_image = models.ImageField()
     post = models.ForeignKey(
         Post, related_name="post_image", on_delete=models.CASCADE)
+    post_image = models.FileField(upload_to='images/', null=True, blank=True) 
 
     def __str__(self):
         return f"{self.post} 의 사진 {self.id}"
@@ -361,7 +361,7 @@ class FileAnswer(models.Model):
     apply = models.ForeignKey(
         Apply, related_name="file_answer", on_delete=models.CASCADE
     )
-    # uploaded_file = models.FieldFile()
+    uploaded_file = models.FileField(upload_to='files/') 
 
     @classmethod
     def get_name(cls):

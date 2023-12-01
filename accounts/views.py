@@ -16,7 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from django.utils import timezone  # now = timezone.now() 이렇게 사용하기
 
-import random
+import random, os
 
 
 User = get_user_model()
@@ -28,15 +28,18 @@ class UserRegisterView(generics.CreateAPIView):
     permission_classes = [permissions.AllowAny]
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    pass
+    serializer_class = CustomTokenObtainPairSerializer
 
 # 4. 서강대 이메일 중복체크 및 인증확인 메일 보내는 api
 import smtplib
 from email.mime.text import MIMEText
-from config.settings import get_env
+# from config.settings import get_env
+from config.settings import get_env_variable
 
-send_email = get_env("SEND_EMAIL")
-send_pwd = get_env("SEND_PWD")
+# send_email = get_env("SEND_EMAIL")
+# send_pwd = get_env("SEND_PWD")
+send_email = get_env_variable("SEND_EMAIL")
+send_pwd = get_env_variable("SEND_PWD")
 smtp_name = "smtp.gmail.com"
 smtp_port = 587
 
