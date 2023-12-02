@@ -6,6 +6,9 @@ from datetime import timedelta, datetime
 
 from table.models import Post, Crew, Category
 
+'''
+Todo: 정렬 기능 테스트하기
+'''
 
 # 메인 페이지에서 모집 공고 목록을 조회한다.
 class MainTest(TestCase):
@@ -44,7 +47,7 @@ class MainTest(TestCase):
         response = self.client.get(self.url, data=params)
 
         # then
-        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(len(response.json()), 2)
         self.assertEqual(response.status_code, 200)
 
     # 모집 공고를 필터 검색한다.
@@ -54,7 +57,7 @@ class MainTest(TestCase):
         response = self.client.get(self.url, data=params)
 
         # then
-        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(len(response.json()), 2)
         self.assertEqual(response.status_code, 200)
 
     # 모집 공고를 키워드 검색과 필터 검색한다.
