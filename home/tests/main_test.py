@@ -82,7 +82,7 @@ def create_post(id, apply_end_date, title, crew):
     return Post.objects.create(
         id=id,
         apply_start_date="1000-01-01 00:00:00",
-        apply_end_date=pare_end_date(apply_end_date),
+        apply_end_date=parse_end_date(apply_end_date),
         document_result_date="1000-01-01 00:00:00",
         has_interview=False,
         requirement_target="0",
@@ -93,7 +93,7 @@ def create_post(id, apply_end_date, title, crew):
         progress="0"
     )
 
-def pare_end_date(apply_end_date):
+def parse_end_date(apply_end_date):
     if apply_end_date == datetime.max:
         return apply_end_date.strftime('%Y-%m-%d %H:%M:%S.%f')
     return apply_end_date.strftime('%Y-%m-%d 00:00:00')

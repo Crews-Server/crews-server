@@ -163,12 +163,8 @@ class Post(models.Model):
     progress = models.CharField(max_length=300)
     pass_message = models.CharField(max_length=500, null=True, blank=True)
     fail_message = models.CharField(max_length=500, null=True, blank=True)
-
-    def total_apply_count(self):  # 해당 Post에 연결된 apply들이 몇 개인지 계산해서 반환해주는 메서드
-        return self.apply.count()  # related_name 'apply'를 사용함. 따라서 역참조 할 때 apply 이용!
-
-    def total_like_count(self):  # 해당 Post에 연결된 Like들이 몇 개인지 계산해서 반환해주는 메서드
-        return self.like.count()  # related_name 'like'를 사용함. 따라서 역참조 할 때 like 이용!
+    likes_count = models.IntegerField(default=0)
+    applicants_count = models.IntegerField(default=0)
 
     def __str__(self):
         return self.title
