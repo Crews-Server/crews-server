@@ -1,9 +1,8 @@
-from django.db.models import Q
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from table.models import Post, Crew, Category
 
@@ -23,6 +22,7 @@ class MainTest(TestCase):
         self.post2 = create_post(2, now+timedelta(days=8), "컴온", self.LIKELION_CREW)
         self.post3 = create_post(3, now+timedelta(days=9), "BE 신입부원 모집합니다.", self.CEOS_CREW)
         self.post4 = create_post(4, now+timedelta(days=-1), "FE 신입부원 모집합니다.", self.CEOS_CREW)
+        self.post5 = create_post(5, datetime.max, "상시 모집합니다.", self.CEOS_CREW)
 
     # 모집 마감 순으로 모집 공고를 조회한다.
     def test_deadline_order(self):
@@ -67,11 +67,22 @@ class MainTest(TestCase):
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.status_code, 200)
 
+    # 상시 모집인 모집 공고를 조회한다.
+    def test_on_going_filter(self):
+        # given & when
+        params = {'on-going': "true"}
+        response = self.client.get(self.url, data=params)
+
+        # then
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.status_code, 200)
+
+
 def create_post(id, apply_end_date, title, crew):
     return Post.objects.create(
         id=id,
         apply_start_date="1000-01-01 00:00:00",
-        apply_end_date=apply_end_date.strftime('%Y-%m-%d 00:00:00'),
+        apply_end_date=pare_end_date(apply_end_date),
         document_result_date="1000-01-01 00:00:00",
         has_interview=False,
         requirement_target="0",
@@ -81,6 +92,11 @@ def create_post(id, apply_end_date, title, crew):
         crew=crew,
         progress="0"
     )
+
+def pare_end_date(apply_end_date):
+    if apply_end_date == datetime.max:
+        return apply_end_date.strftime('%Y-%m-%d %H:%M:%S.%f')
+    return apply_end_date.strftime('%Y-%m-%d 00:00:00')
 
 def create_category(id, name):
     return Category.objects.create(id=id, category_name=name)
