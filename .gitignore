@@ -169,7 +169,8 @@ cython_debug/
 # Vscode
 .vscode/
 
-# secret key
-secrets.json
+# test image
+*/tests/images
+/images
 
 # End of https://www.toptal.com/developers/gitignore/api/django
