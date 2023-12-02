@@ -1,11 +1,11 @@
-from django.shortcuts import get_object_or_404, get_list_or_404
+from django.db.models import Q
 from django.test import TestCase
 from django.utils import timezone
 from rest_framework.test import APIClient
 
 from datetime import timedelta
 
-from table.models import Post, Crew
+from table.models import Post, Crew, Category
 
 
 # 메인 페이지에서 모집 공고 목록을 조회한다.
@@ -15,8 +15,10 @@ class MainTest(TestCase):
 
     def setUp(self):
         now = timezone.now().date()
-        self.crew1 = Crew.objects.create(id=1, crew_name="멋쟁이사자처럼", description="0")
-        self.crew2 = Crew.objects.create(id=2, crew_name="CEOS", description="0")
+        IT_CATEGORY = create_category(1, "IT")
+        MARKETING_CATEGORY = create_category(2, "창업")
+        self.crew1 = Crew.objects.create(id=1, crew_name="멋쟁이사자처럼", description="0", category = IT_CATEGORY)
+        self.crew2 = Crew.objects.create(id=2, crew_name="CEOS", description="0", category = MARKETING_CATEGORY)
         self.post1 = create_post(1, now, "신입부원을 모집합니다.", self.crew1)
         self.post2 = create_post(2, now+timedelta(days=8), "컴온", self.crew1)
         self.post3 = create_post(3, now+timedelta(days=9), "BE 신입부원 모집합니다.", self.crew2)
@@ -45,6 +47,25 @@ class MainTest(TestCase):
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.status_code, 200)
 
+    # 모집 공고를 필터 검색한다.
+    def test_filter(self):
+        # given & when
+        params = {'category': ['창업']}
+        response = self.client.get(self.url, data=params)
+
+        # then
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.status_code, 200)
+
+    # 모집 공고를 키워드 검색과 필터 검색한다.
+    def test_filter_search(self):
+        # given & when
+        params = {'category': ['IT'], 'search': '모집합니다'}
+        response = self.client.get(self.url, data=params)
+
+        # then
+        self.assertEqual(len(response.json()), 1)
+        self.assertEqual(response.status_code, 200)
 
 def create_post(id, apply_end_date, title, crew):
     return Post.objects.create(
@@ -60,3 +81,6 @@ def create_post(id, apply_end_date, title, crew):
         crew=crew,
         progress="0"
     )
+
+def create_category(id, name):
+    return Category.objects.create(id=id, category_name=name)
