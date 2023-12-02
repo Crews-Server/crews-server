@@ -4,6 +4,8 @@ from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
 
+from datetime import datetime
+
 from .serializers import MainSerializer
 from table.models import Post
 
@@ -21,6 +23,10 @@ class Main(ListAPIView):
 
     def get_queryset(self):
         qs = super().get_queryset()
+
+        on_going = self.request.query_params.get('on-going', None)
+        if on_going:
+            qs = qs.filter(apply_end_date=datetime.max)
 
         categories = self.request.query_params.getlist('category')
         if categories:
