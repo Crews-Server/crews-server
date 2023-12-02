@@ -15,14 +15,14 @@ class MainTest(TestCase):
 
     def setUp(self):
         now = timezone.now().date()
-        IT_CATEGORY = create_category(1, "IT")
-        MARKETING_CATEGORY = create_category(2, "창업")
-        self.crew1 = Crew.objects.create(id=1, crew_name="멋쟁이사자처럼", description="0", category = IT_CATEGORY)
-        self.crew2 = Crew.objects.create(id=2, crew_name="CEOS", description="0", category = MARKETING_CATEGORY)
-        self.post1 = create_post(1, now, "신입부원을 모집합니다.", self.crew1)
-        self.post2 = create_post(2, now+timedelta(days=8), "컴온", self.crew1)
-        self.post3 = create_post(3, now+timedelta(days=9), "BE 신입부원 모집합니다.", self.crew2)
-        self.post4 = create_post(4, now+timedelta(days=-1), "FE 신입부원 모집합니다.", self.crew2)
+        self.IT_CATEGORY = create_category(1, "IT")
+        self.MARKETING_CATEGORY = create_category(2, "마케팅")
+        self.LIKELION_CREW = create_crew(1, "멋쟁이사자처럼", self.IT_CATEGORY)
+        self.CEOS_CREW = create_crew(2, "CEOS", self.MARKETING_CATEGORY)
+        self.post1 = create_post(1, now, "신입부원을 모집합니다.", self.LIKELION_CREW)
+        self.post2 = create_post(2, now+timedelta(days=8), "컴온", self.LIKELION_CREW)
+        self.post3 = create_post(3, now+timedelta(days=9), "BE 신입부원 모집합니다.", self.CEOS_CREW)
+        self.post4 = create_post(4, now+timedelta(days=-1), "FE 신입부원 모집합니다.", self.CEOS_CREW)
 
     # 모집 마감 순으로 모집 공고를 조회한다.
     def test_deadline_order(self):
@@ -50,7 +50,7 @@ class MainTest(TestCase):
     # 모집 공고를 필터 검색한다.
     def test_filter(self):
         # given & when
-        params = {'category': ['창업']}
+        params = {'category': ['마케팅']}
         response = self.client.get(self.url, data=params)
 
         # then
@@ -84,3 +84,6 @@ def create_post(id, apply_end_date, title, crew):
 
 def create_category(id, name):
     return Category.objects.create(id=id, category_name=name)
+
+def create_crew(id, name, category):
+    return Crew.objects.create(id=id, crew_name=name, description="0", category = category)
