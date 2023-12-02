@@ -7,7 +7,6 @@ class MainSerializer(serializers.ModelSerializer):
     crew_name = serializers.SerializerMethodField()
     crew_profile = serializers.SerializerMethodField()
     d_day = serializers.SerializerMethodField()
-    like_count = serializers.SerializerMethodField()
     category = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
     thumbnail = serializers.SerializerMethodField()
@@ -30,9 +29,6 @@ class MainSerializer(serializers.ModelSerializer):
             return "D-0"
         else:
             return f"D-{days_remaining}"
-    
-    def get_like_count(self, obj):
-        return obj.total_like_count()
 
     def get_category(self, obj):
         if obj.crew.category:
@@ -51,4 +47,4 @@ class MainSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'crew_name', 'crew_profile', 'd_day', 'like_count', 'category', 'is_liked', 'thumbnail']
+        fields = ['id', 'title', 'likes_count', 'crew_name', 'crew_profile', 'd_day', 'category', 'is_liked', 'thumbnail']
