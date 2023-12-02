@@ -182,6 +182,7 @@ class PostImage(models.Model):
     post = models.ForeignKey(
         Post, related_name="post_image", on_delete=models.CASCADE)
     post_image = models.FileField(upload_to='images/', null=True, blank=True) 
+    is_thumbnail = models.BooleanField()
 
     def __str__(self):
         return f"{self.post} 의 사진 {self.id}"
