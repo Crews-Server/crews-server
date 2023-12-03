@@ -3,7 +3,6 @@ from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .exceptions import InvalidLikeException
 from .serializers import *
 from table.models import *
 from utils.get_object import custom_get_object_or_404
