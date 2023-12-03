@@ -22,7 +22,7 @@ class MainPost(ListAPIView):
     search_fields = ['title', 'crew__crew_name']
 
     def get_queryset(self):
-        qs = super().get_queryset()
+        qs = super().get_queryset().filter(apply_end_date__gte=timezone.now().date())
 
         # 상시 모집
         on_going = self.request.query_params.get('on-going', None)
@@ -41,7 +41,7 @@ class MainPost(ListAPIView):
         ordering = self.request.query_params.get('ordering', 'apply-end-date')
         ordering = ordering.replace('-', '_')
         if ordering == 'apply_end_date':
-            return qs.filter(apply_end_date__gte=timezone.now().date()).order_by(ordering)
+            return qs.order_by(ordering)
         return qs.order_by('-'+ordering)
 
 
