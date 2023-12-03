@@ -7,7 +7,7 @@ from datetime import timedelta, datetime
 from table.models import Post, Crew, Category
 
 '''
-Todo: 정렬 기능 테스트하기
+TODO: 정렬 기능 테스트하기
 '''
 
 # 메인 페이지에서 모집 공고 목록을 조회한다.
