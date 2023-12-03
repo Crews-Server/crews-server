@@ -12,9 +12,9 @@ from table.models import Post
 
 # 메인 페이지 모집 공고 조회 api
 '''
-Todo: No-offset 페이지네이션
+TODO: No-offset 페이지네이션
 '''
-class Main(ListAPIView):
+class MainPost(ListAPIView):
     queryset = Post.objects.all()
     permission_classes = [AllowAny]
     serializer_class = MainSerializer
@@ -43,3 +43,17 @@ class Main(ListAPIView):
         if ordering == 'apply_end_date':
             return qs.filter(apply_end_date__gte=timezone.now().date()).order_by(ordering)
         return qs.order_by('-'+ordering)
+
+
+# 지원자 수가 많은 Hot 모집 공고 조회 api
+'''
+TODO: No-offset 페이지네이션
+'''
+class HotPost(ListAPIView):
+    queryset = Post.objects.all()
+    serializer_class = MainSerializer
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(apply_end_date__gte=timezone.now().date()).order_by('-applicants_count')
