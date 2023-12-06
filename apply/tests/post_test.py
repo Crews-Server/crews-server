@@ -1,6 +1,8 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from rest_framework.test import APIRequestFactory, APIClient
+import os
 
 from ..permissions import IsAdministrator
 from .common.generator import create_user
@@ -85,3 +87,21 @@ class PostCreateTest(TestCase):
 
         # then
         self.assertTrue(has_permission)
+
+    # 모집공고의 이미지를 함께 등록한다
+    def test_post_image(self):
+        # given
+        client = APIClient()
+        client.force_authenticate(user=self.user)
+
+        path = os.path.dirname(os.path.abspath(__file__))
+        images = [SimpleUploadedFile(name=f'test{i}.jpg', content=open(path+f'/images/test{i}.jpg', 'rb').read(), content_type='image/jpeg') for i in range(2)]
+        files = [('image', images[0]), ('image', images[0]), ('thumbnail', images[1])]
+
+        # when
+        response = client.post(self.url,
+                               data=POST_REQUEST,
+                               files=files)
+
+        # then
+        self.assertEqual(response.status_code, 201)

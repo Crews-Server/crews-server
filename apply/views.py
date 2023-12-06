@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .exceptions.invalid_apply_exception import InvalidApplyException
+from .exceptions import InvalidApplyException, PostAuthorException
 from .permissions import IsAdministrator
 from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer, ApplySerializer, LongSentenceAnswerSerializer, CheckBoxAnswerSerializer, FileAnswerSerializer
 from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption
@@ -17,24 +17,14 @@ class PostCreate(generics.CreateAPIView):
 
 
 # section 별로 지원서 문항을 생성하는 api
-"""
-request body
-- section_name
-- section_description
-- question
-    - type
-    - is_essential
-    - question
-    ...
-"""
 @api_view(['POST'])
 @permission_classes([IsAdministrator])
 def application_create(request):
     post = custom_get_object_or_404(Post, pk=request.data["post_id"])
     
-    administrator = Administrator.objects.get(user=request.user)
+    administrator = custom_get_object_or_404(Administrator, user=request.user)
     if administrator.crew != post.crew:
-        return Response({"error": "Request user is not Post's crew administrator"}, status=status.HTTP_403_FORBIDDEN)
+        raise PostAuthorException
 
     # section 저장
     section_serailizer = SectionSerializer(

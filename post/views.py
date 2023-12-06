@@ -1,13 +1,11 @@
-from table.models import *
-from .serializers import *
-
+from django.utils import timezone
 from rest_framework import permissions, status
-from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from django.core.exceptions import ObjectDoesNotExist
+from rest_framework.response import Response
 
-from django.utils import timezone  # now = timezone.now() 이렇게 사용하기
+from .serializers import *
+from table.models import *
+from utils.get_object import custom_get_object_or_404
 
 
 # 1. 동아리 정보 반환하는 api (GET), 이건 기본 정보 반환이라 로그인 유무 상관 없음.
@@ -41,38 +39,22 @@ def get_crew_info(request):
     return Response(context, status=status.HTTP_200_OK)
 
 
-# 2. 유저가 해당 Post 찜 등록 or 해제 하기
+# 2. 모집 공고 찜하기
 @api_view(['POST'])
-@permission_classes([permissions.IsAuthenticated])
-def like_post(request):
-
+def like_post(request, post_id):
     user = request.user
-    # post_title = request.data.get('post_title')  # 클라이언트로부터 공고(Post)의 title을 받음
-    # crew_name = request.data.get('crew_name')  # 클라이언트로부터 crew의 이름 받음
-
-    post_id = request.data.get('post_id')
-
-    if(user.is_operator == True):  
-        return Response({"error": "He is Administrator, not general User!"}, status=status.HTTP_403_FORBIDDEN)
-    
-    try:
-        post = Post.objects.get(id = post_id)
-    except Post.DoesNotExist:
-        return Response({"error": "Post not found"}, status=status.HTTP_404_NOT_FOUND)
+    post = custom_get_object_or_404(Post, pk=post_id)
     
     try:
         like = Like.objects.get(user=user, post=post)
     except Like.DoesNotExist:
-        # 새로운 like 객체를 만들어야!
         new_like = Like(
             user = user,
             post = post
         )
         new_like.save()
-
         return Response({"message": "Like has been added."}, status=status.HTTP_201_CREATED)
-
-    # 해당 like 객체를 삭제해야.
+    
     like.delete()
     return Response({"message": "Like has been removed."}, status=status.HTTP_200_OK)
 

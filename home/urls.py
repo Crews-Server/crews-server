@@ -1,7 +1,7 @@
-from django.urls import path, include
-from .views import *
+from django.urls import path
+from .views import MainPost, HotPost
 
 urlpatterns = [
-    path('normal-get-main/', normal_get_main, name="normal-get-main"), # 1번
-    path('search-post/', search_post, name="search-post"), # 2번
+    path('', MainPost.as_view(), name="main-page"), # 모집 공고 필터 검색
+    path('hot/', HotPost.as_view(), name="hot-post"), # Hot 모집 공고 조회
 ]

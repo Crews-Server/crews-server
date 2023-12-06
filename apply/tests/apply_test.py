@@ -38,6 +38,8 @@ class ApplyCreateTest(TestCase):
                                format='json')
         
         # then
+        self.post.refresh_from_db()
+        self.assertEqual(self.post.applicants_count, 1)
         self.assertEqual(response.status_code, 201)
 
     # 잘못된 지원서 생성 요청으로 STATUS 400을 반환한다
