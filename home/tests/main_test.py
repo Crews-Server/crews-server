@@ -4,11 +4,8 @@ from rest_framework.test import APIClient
 
 from datetime import timedelta, datetime
 
-from table.models import Post, Crew, Category
+from .utils import create_category, create_crew, create_post
 
-'''
-TODO: 정렬 기능 테스트하기
-'''
 
 # 메인 페이지에서 모집 공고 목록을 조회한다.
 class MainTest(TestCase):
@@ -33,9 +30,10 @@ class MainTest(TestCase):
         response = self.client.get(self.url)
 
         #then
-        d_day1 = response.json()[0]['d_day'][2:]
-        d_day2 = response.json()[1]['d_day'][2:]
-        d_day3 = response.json()[2]['d_day'][2:]
+        results = response.json()['results']
+        d_day1 = results[0]['d_day'][2:]
+        d_day2 = results[1]['d_day'][2:]
+        d_day3 = results[2]['d_day'][2:]
         self.assertLess(d_day1, d_day2)
         self.assertLess(d_day2, d_day3)
         self.assertEqual(response.status_code, 200)
@@ -47,7 +45,8 @@ class MainTest(TestCase):
         response = self.client.get(self.url, data=params)
 
         # then
-        self.assertEqual(len(response.json()), 2)
+        results = response.json()['results']
+        self.assertEqual(len(results), 2)
         self.assertEqual(response.status_code, 200)
 
     # 모집 공고를 필터 검색한다.
@@ -57,7 +56,8 @@ class MainTest(TestCase):
         response = self.client.get(self.url, data=params)
 
         # then
-        self.assertEqual(len(response.json()), 2)
+        results = response.json()['results']
+        self.assertEqual(len(results), 2)
         self.assertEqual(response.status_code, 200)
 
     # 모집 공고를 키워드 검색과 필터 검색한다.
@@ -67,7 +67,8 @@ class MainTest(TestCase):
         response = self.client.get(self.url, data=params)
 
         # then
-        self.assertEqual(len(response.json()), 1)
+        results = response.json()['results']
+        self.assertEqual(len(results), 1)
         self.assertEqual(response.status_code, 200)
 
     # 상시 모집인 모집 공고를 조회한다.
@@ -77,32 +78,6 @@ class MainTest(TestCase):
         response = self.client.get(self.url, data=params)
 
         # then
-        self.assertEqual(len(response.json()), 1)
+        results = response.json()['results']
+        self.assertEqual(len(results), 1)
         self.assertEqual(response.status_code, 200)
-
-
-def create_post(id, apply_end_date, title, crew):
-    return Post.objects.create(
-        id=id,
-        apply_start_date="1000-01-01 00:00:00",
-        apply_end_date=parse_end_date(apply_end_date),
-        document_result_date="1000-01-01 00:00:00",
-        has_interview=False,
-        requirement_target="0",
-        title=title,
-        content="0",
-        membership_fee="0",
-        crew=crew,
-        progress="0"
-    )
-
-def parse_end_date(apply_end_date):
-    if apply_end_date == datetime.max:
-        return apply_end_date.strftime('%Y-%m-%d %H:%M:%S.%f')
-    return apply_end_date.strftime('%Y-%m-%d 00:00:00')
-
-def create_category(id, name):
-    return Category.objects.create(id=id, category_name=name)
-
-def create_crew(id, name, category):
-    return Crew.objects.create(id=id, crew_name=name, description="0", category = category)
