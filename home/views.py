@@ -3,17 +3,16 @@ from django.utils import timezone
 from rest_framework.filters import SearchFilter
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
 from datetime import datetime
 
 from .serializers import MainSerializer
 from table.models import Post
+from .paginations import HomeCursorPagination
 
 
 # 메인 페이지 모집 공고 조회 api
-'''
-TODO: No-offset 페이지네이션
-'''
 class MainPost(ListAPIView):
     queryset = Post.objects.all()
     permission_classes = [AllowAny]
@@ -37,17 +36,24 @@ class MainPost(ListAPIView):
                 category_query |= Q(crew__category__category_name=category, crew__category__isnull=False)
             qs = qs.filter(category_query)
 
-        # 정렬
-        ordering = self.request.query_params.get('ordering', 'apply-end-date')
-        ordering = ordering.replace('-', '_')
-        if ordering == 'apply_end_date':
-            return qs.order_by(ordering)
-        return qs.order_by('-'+ordering)
+        return qs
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        paginator = HomeCursorPagination()
+        paginated_queryset = paginator.paginate_queryset(queryset, request, view=self)
+
+        if paginated_queryset is not None:
+            serializer = self.get_serializer(paginated_queryset, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 # 지원자 수가 많은 Hot 모집 공고 조회 api
 '''
-TODO: No-offset 페이지네이션
+TODO: No-offset 페이지네이션 - 기획 회의 결과를 반영해야 한다.
 '''
 class HotPost(ListAPIView):
     queryset = Post.objects.all()
