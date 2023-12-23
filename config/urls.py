@@ -10,7 +10,6 @@ urlpatterns = [
     path('apply/', include('apply.urls')),
     path('evaluation/', include('evaluation.urls')),
     path('home/', include('home.urls')),
-    path('mypage/', include('mypage.urls')),
     path('post/', include('post.urls')),
 ]
 

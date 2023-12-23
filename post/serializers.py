@@ -1,7 +1,47 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
-from table.models import *
-from django.core.exceptions import ObjectDoesNotExist
+
+from .models import PostImage, Post
+from accounts.models import Crew
+from post.models import Like
+
+
+class PostImageSerializer(serializers.ModelSerializer):
+    post_image = serializers.ImageField(use_url=True)
+
+    class Meta:
+        model = PostImage
+        fields = ['post_image']
+
+
+class PostSerializer(serializers.ModelSerializer):
+    images = serializers.SerializerMethodField()
+    thumbnail = serializers.SerializerMethodField()
+
+    def get_images(self, obj):
+        image = obj.post_image.all() 
+        return PostImageSerializer(instance=image, many=True, context=self.context).data
+
+    def get_thumbnail(self, obj):
+        thumbnail = obj.post_image.filter(is_thumbnail=True).first()
+        return PostImageSerializer(instance=thumbnail, context=self.context).data
+
+    class Meta:
+        model = Post
+        exclude = ['pass_message', 'fail_message', 'created_at']
+
+    def create(self, validated_data):
+        instance = Post.objects.create(**validated_data)
+        image_set = self.context['request'].FILES
+
+        thumbnail_image = image_set.get('thumbnail')
+
+        if thumbnail_image:
+            PostImage.objects.create(post=instance, post_image=thumbnail_image, is_thumbnail=True)
+
+        for image_data in image_set.getlist('image'):
+            PostImage.objects.create(post=instance, post_image=image_data, is_thumbnail=False)
+        return instance
+
 
 class ThisCrewSerializers(serializers.ModelSerializer):
     crew_category = serializers.SerializerMethodField()
@@ -13,16 +53,17 @@ class ThisCrewSerializers(serializers.ModelSerializer):
         return obj.category.category_name
 
 
-
 class ThisPostSerializers(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ['title']
 
+
 class PostContent_PostImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = PostImage
         fields = "__all__"
+
 
 class PostContent_PostSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()     # Post 모델의 related_name과 동일하게 설정

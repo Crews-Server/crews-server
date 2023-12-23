@@ -1,11 +1,20 @@
 from django.utils import timezone
+from rest_framework import generics
 from rest_framework import permissions, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from .serializers import *
-from table.models import *
+from accounts.models import Administrator
+from apply.models import Apply
 from utils.get_object import custom_get_object_or_404
+from utils.permissions import IsAdministrator
+
+
+# 0. 모집 공고 생성 api
+class PostCreate(generics.CreateAPIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAdministrator]
 
 
 # 1. 동아리 정보 반환하는 api (GET), 이건 기본 정보 반환이라 로그인 유무 상관 없음.

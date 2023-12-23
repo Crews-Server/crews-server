@@ -7,9 +7,9 @@ from rest_framework.response import Response
 
 from datetime import datetime
 
-from .serializers import MainSerializer
-from table.models import Post
 from .paginations import HomeCursorPagination
+from .serializers import MainSerializer
+from post.models import Post
 
 
 # 메인 페이지 모집 공고 조회 api

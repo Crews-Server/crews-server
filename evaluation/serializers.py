@@ -1,10 +1,9 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from table.models import *
-from django.core.exceptions import ObjectDoesNotExist
+from rest_framework import serializers
 
-from django.utils import timezone  # now = timezone.now() 이렇게 사용하기
+from .models import Evaluation
 
+User = get_user_model()
 
 class EvaluationSerializer(serializers.ModelSerializer):
     class Meta:

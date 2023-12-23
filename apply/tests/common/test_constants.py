@@ -126,10 +126,10 @@ APPLY_REQUEST = {
             "check_box": 1,
             "answer": "Java"
         },
-        {
-            "file": 1,
-            "answer": "none"  # 구현 안 됨
-        }
+        # {
+        #     "file": 1,
+        #     "answer": "none"  # 구현 안 됨
+        # }
     ]
 }
 

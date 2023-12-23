@@ -39,11 +39,9 @@ INSTALLED_APPS = [
     'corsheaders',
     'storages',
     # apps
-    "table",
     "accounts",
     "home",
     "post",
-    "mypage",
     "apply",
     "evaluation",
 ]
@@ -134,4 +132,4 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-AUTH_USER_MODEL = "table.User"
+AUTH_USER_MODEL = "accounts.User"

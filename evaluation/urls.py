@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import *
+from .views import EvaluationViewSet, get_applied_user_list, get_document_pass_count, get_user_evaluation, set_document_pass, unset_document_pass, set_final_pass, unset_final_pass, get_user_applications, get_admin_evaluation_status, update_evaluation
 
 router = DefaultRouter()
 router.register(r"evaluations", EvaluationViewSet)

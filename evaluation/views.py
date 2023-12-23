@@ -1,11 +1,17 @@
-from django.shortcuts import render
+from django.contrib.auth import get_user_model
 from rest_framework import viewsets
-from table.models import *  # table 모델에서 Evaluation import
-from .serializers import *
-from apply.permissions import IsAdministrator
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import permissions, status
 from rest_framework.response import Response
+
+from .models import Evaluation
+from .serializers import EvaluationSerializer, GetAppliedUserListSerializer
+from accounts.models import Administrator
+from apply.models import Apply, LongSentenceAnswer, CheckBoxAnswer, FileAnswer
+from post.models import Post
+from utils.permissions import IsAdministrator
+
+User = get_user_model()
 
 
 class EvaluationViewSet(viewsets.ModelViewSet):

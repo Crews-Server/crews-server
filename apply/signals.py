@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-from table.models import Apply
+from .models import Apply
 
 
 @receiver(post_save, sender=Apply)

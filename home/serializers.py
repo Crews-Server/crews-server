@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from table.models import Post, PostImage, Like
+from post.models import Post, PostImage, Like
 
 class MainSerializer(serializers.ModelSerializer):
     crew_name = serializers.SerializerMethodField()

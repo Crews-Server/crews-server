@@ -1,19 +1,16 @@
-from rest_framework import generics, status
+from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .exceptions import InvalidApplyException, PostAuthorException
-from .permissions import IsAdministrator
-from .serializers import PostSerializer, SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer, ApplySerializer, LongSentenceAnswerSerializer, CheckBoxAnswerSerializer, FileAnswerSerializer
-from table.models import Post, Administrator, Section, LongSentence, CheckBox, File, CheckBoxOption
+from .models import LongSentence, CheckBox, File, CheckBoxOption
+from .serializers import SectionSerializer, LongSentenceSerializer, CheckBoxSerializer, FileSerializer, CheckBoxOptionSerializer, ApplySerializer, LongSentenceAnswerSerializer, CheckBoxAnswerSerializer, FileAnswerSerializer
+from accounts.models import Administrator
+from post.models import Post, Section
 from utils.get_object import custom_get_object_or_404
-
-# 모집 공고를 생성하는 api
-class PostCreate(generics.CreateAPIView):
-    serializer_class = PostSerializer
-    permission_classes = [IsAdministrator]
+from utils.permissions import IsAdministrator
 
 
 # section 별로 지원서 문항을 생성하는 api
